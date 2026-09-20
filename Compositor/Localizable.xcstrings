@@ -2881,6 +2881,22 @@
         }
       }
     },
+    "Duplicate Pixels": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate Pixels"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dupliquer les pixels"
+          }
+        }
+      }
+    },
     "Edit": {
       "localizations": {
         "en": {
@@ -2941,6 +2957,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ellipse"
+          }
+        }
+      }
+    },
+    "Elliptical Marquee": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elliptical Marquee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélection elliptique"
           }
         }
       }
@@ -3693,6 +3725,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Courbe de transfert de dégradé"
+          }
+        }
+      }
+    },
+    "Gradient Mask": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gradient Mask"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masque en dégradé"
           }
         }
       }
@@ -5201,6 +5249,22 @@
         }
       }
     },
+    "Move Pixels": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Pixels"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer les pixels"
+          }
+        }
+      }
+    },
     "Move Selection": {
       "localizations": {
         "en": {
@@ -6017,6 +6081,22 @@
         }
       }
     },
+    "Polygonal Lasso": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Polygonal Lasso"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lasso polygonal"
+          }
+        }
+      }
+    },
     "Positive straightens lines that bow outward (barrel); negative, lines that bow inward (pincushion).": {
       "localizations": {
         "en": {
@@ -6285,6 +6365,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rectangle"
+          }
+        }
+      }
+    },
+    "Rectangular Marquee": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rectangular Marquee"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélection rectangulaire"
           }
         }
       }

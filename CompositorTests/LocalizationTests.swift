@@ -52,10 +52,55 @@ struct LocalizationTests {
         }
     }
 
+    /// Undo/Redo titles look up these English history names at runtime. A missing catalog
+    /// entry leaves the Edit menu in English after a French UI action.
+    @Test func frenchCatalogCoversStaticHistoryActionNames() throws {
+        let strings = try catalog()
+        for name in Self.staticHistoryNames {
+            let french = try #require(strings[name]?["fr"], "Missing French translation for history name \(name)")
+            let english = strings[name]?["en"] ?? name
+            #expect(!french.isEmpty)
+            if Self.historyNamesThatMustDiffer.contains(name) {
+                #expect(french != english, "\(name) should be translated")
+            }
+        }
+        for kind in AdjustmentKind.allCases {
+            #expect(strings[kind.rawValue]?["fr"] != nil, "Missing French translation for \(kind.rawValue)")
+        }
+        for kind in FilterKind.allCases {
+            #expect(strings[kind.rawValue]?["fr"] != nil, "Missing French translation for \(kind.rawValue)")
+        }
+    }
+
     @Test func persistedEnumRawValuesStayEnglish() {
         #expect(LayerBlendMode.multiply.rawValue == "Multiply")
         #expect(LayerBlendMode.colorDodge.rawValue == "Color Dodge")
         #expect(FilterKind.gaussianBlur.rawValue == "Gaussian Blur")
         #expect(AdjustmentKind.hsv.rawValue == "Hue/Saturation")
     }
+
+    /// English identifiers stored on `DocumentHistory` and shown through `localizedHistoryAction`.
+    private static let staticHistoryNames = [
+        "Add Hide-All Mask", "Add Mask from Selection", "Add Reveal-All Mask", "Blur", "Brush Stroke",
+        "Canvas Size", "Clear", "Clone Stamp", "Contract Selection", "Copy Layer Mask",
+        "Copy Layers from Project", "Create Clipping Mask", "Crop", "Delete Layer", "Delete Layer Mask",
+        "Delete Layers", "Deselect", "Disable Layer Mask", "Distort", "Distort Layer Mask", "Distort Layers",
+        "Duplicate Layer", "Duplicate Layers", "Duplicate Pixels", "Elliptical Marquee", "Enable Layer Mask",
+        "Erase", "Expand Selection", "Fill", "Fill Mask", "Flip Canvas Horizontal", "Flip Canvas Vertical",
+        "Flip Horizontal", "Flip Vertical", "Gradient", "Gradient Mask", "Group Layers", "Hide Layer",
+        "Hue/Saturation", "Image Size", "Import Image", "Import Images", "Inverse", "Invert", "Invert Mask",
+        "Lasso", "Layer Blend Mode", "Layer Opacity", "Layer via Copy", "Levels", "Link Layer Mask",
+        "Liquify", "Load Layer Selection", "Load Mask Selection", "Magic Wand", "Merge Down", "Merge Group",
+        "Merge Layers", "Move Layer", "Move Pixels", "Move Selection", "New Blank Layer", "New Canvas",
+        "New Folder", "Paint Mask", "Paste", "Polygonal Lasso", "Rectangular Marquee", "Release Clipping Mask",
+        "Rename Layer", "Reorder Layers", "Replace Layer Mask", "Select All", "Show Layer", "Smudge",
+        "Spot Healing", "Transform Layer", "Transform Layer Mask", "Transform Layers", "Transform Selection",
+        "Unlink Layer Mask",
+    ]
+
+    /// Names whose French copy must not be a copy of the English source.
+    private static let historyNamesThatMustDiffer: Set<String> = [
+        "Duplicate Pixels", "Elliptical Marquee", "Gradient Mask", "Move Pixels",
+        "Polygonal Lasso", "Rectangular Marquee",
+    ]
 }
