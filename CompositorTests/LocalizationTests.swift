@@ -29,10 +29,55 @@ struct LocalizationTests {
         return result
     }
 
+    private func frenchBundle() throws -> Bundle {
+        let url = try #require(
+            Bundle.main.url(forResource: "fr", withExtension: "lproj"),
+            "Compiled app is missing fr.lproj; French strings would never load at runtime")
+        return try #require(Bundle(url: url))
+    }
+
+    @Test func compiledFrenchLocalizationIsPackaged() throws {
+        let french = try frenchBundle()
+        #expect(localizedString("Undo", bundle: french) == "Annuler")
+        #expect(localizedString("Untitled", bundle: french) == "Sans titre")
+    }
+
     @Test func historyActionLocalizesAdjustmentKinds() {
         #expect(localizedHistoryAction("Edit Curves Adjustment") == String(format: localizedString("Edit %@ Adjustment"), localizedString("Curves")))
         #expect(localizedHistoryAction("New Hue/Saturation Adjustment") == String(format: localizedString("New %@ Adjustment"), localizedString("Hue/Saturation")))
         #expect(localizedHistoryAction("Transform Layer") == localizedString("Transform Layer"))
+    }
+
+    @Test func historyActionLocalizesAdjustmentKindsInFrench() throws {
+        let french = try frenchBundle()
+        #expect(localizedHistoryAction("Edit Curves Adjustment", bundle: french) == "Modifier le réglage Courbes")
+        #expect(localizedHistoryAction("New Hue/Saturation Adjustment", bundle: french) == "Nouveau réglage Teinte/Saturation")
+        #expect(localizedHistoryAction("Transform Layer", bundle: french) == "Transformer le calque")
+        #expect(localizedHistoryAction("Polygonal Lasso", bundle: french) == "Lasso polygonal")
+        #expect(localizedHistoryAction("Move Pixels", bundle: french) == "Déplacer les pixels")
+        #expect(localizedString("Edit Curves Adjustment", bundle: french)
+                != localizedHistoryAction("Edit Curves Adjustment", bundle: french))
+    }
+
+    @Test func projectDisplayNameLocalizesUntitledWithoutTranslatingFileNames() throws {
+        let french = try frenchBundle()
+        #expect(projectDisplayName(from: nil) == localizedString("Untitled"))
+        #expect(projectDisplayName(from: nil, bundle: french) == "Sans titre")
+        let named = URL(fileURLWithPath: "/tmp/Brush.comp")
+        #expect(projectDisplayName(from: named) == "Brush")
+        #expect(projectDisplayName(from: named, bundle: french) == "Brush")
+        #expect(projectDisplayName(from: named, bundle: french) != localizedString("Brush", bundle: french))
+    }
+
+    @Test func levelsSampleHintsUseCompleteFrenchSentences() throws {
+        let french = try frenchBundle()
+        #expect(LevelsSample.black.samplingHint(bundle: french)
+                == "Cliquer le calque d’origine pour définir le noir. Cliquer de nouveau la pipette pour arrêter.")
+        #expect(LevelsSample.gray.samplingHint(bundle: french)
+                == "Cliquer le calque d’origine pour définir le gris. Cliquer de nouveau la pipette pour arrêter.")
+        #expect(LevelsSample.white.samplingHint(bundle: french)
+                == "Cliquer le calque d’origine pour définir le blanc. Cliquer de nouveau la pipette pour arrêter.")
+        #expect(!LevelsSample.black.samplingHint(bundle: french).contains("Noir"))
     }
 
     @Test func frenchCatalogCoversEveryEnglishKey() throws {

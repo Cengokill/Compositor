@@ -58,7 +58,7 @@ struct ContentView: View {
         }
         .onAppear { applicationDelegate?.showEditor = { openWindow(id: "editor") } }
         .preferredColorScheme(.dark)
-        .navigationTitle(session.projectURL?.deletingPathExtension().lastPathComponent ?? "Untitled")
+        .navigationTitle(projectDisplayName(from: session.projectURL))
         .toolbar { editorToolbar }
         .onChange(of: session.levels == nil) { _, closed in syncLevelsPanel(closed: closed) }
         .onChange(of: session.hueSaturation == nil) { _, closed in syncAdjustmentPanel(closed: closed) }

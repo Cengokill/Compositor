@@ -7,6 +7,12 @@ nonisolated func localizedString(_ key: String, bundle: Bundle = .main) -> Strin
     bundle.localizedString(forKey: key, value: key, table: "Localizable")
 }
 
+/// Fallback title when a project has no URL. Do not pass a user-chosen file name through
+/// `localizedString` — a name such as `Brush` would pick up the catalog translation.
+nonisolated func projectDisplayName(from url: URL?, bundle: Bundle = .main) -> String {
+    url?.deletingPathExtension().lastPathComponent ?? localizedString("Untitled", bundle: bundle)
+}
+
 nonisolated extension RawRepresentable where RawValue == String {
     var localizedName: String { localizedString(rawValue) }
 }

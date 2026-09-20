@@ -1,6 +1,15 @@
 import AppKit
 
-nonisolated enum LevelsSample: String, CaseIterable { case black = "Black", gray = "Gray", white = "White" }
+nonisolated enum LevelsSample: String, CaseIterable {
+    case black = "Black", gray = "Gray", white = "White"
+    /// Complete sentences so French can inflect the sample name (`le noir`) instead of
+    /// lowercasing a translated noun inside an English-shaped format string.
+    func samplingHint(bundle: Bundle = .main) -> String {
+        localizedString(
+            "Click the original layer to set \(rawValue). Click the eyedropper again to stop.",
+            bundle: bundle)
+    }
+}
 nonisolated enum LevelsAuto: String, CaseIterable {
     case contrast = "Contrast", color = "Color", neutral = "Color + neutral midtones"
     func settings(histogram: [[Double]]) -> LevelsSettings {

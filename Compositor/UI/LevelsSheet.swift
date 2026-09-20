@@ -54,7 +54,7 @@ struct LevelsSheet: View {
                 }
             }
             if let mode = edit?.sampleMode {
-                Text(String(format: localizedString("Click the original layer to set %@. Click the eyedropper again to stop."), mode.localizedName.lowercased()))
+                Text(mode.samplingHint())
                     .font(.caption).foregroundStyle(.secondary)
             }
             VStack(alignment: .leading, spacing: 6) {

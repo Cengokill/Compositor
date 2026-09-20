@@ -1297,18 +1297,50 @@
         }
       }
     },
-    "Click the original layer to set %@. Click the eyedropper again to stop.": {
+    "Click the original layer to set Black. Click the eyedropper again to stop.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Click the original layer to set %@. Click the eyedropper again to stop."
+            "value": "Click the original layer to set Black. Click the eyedropper again to stop."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cliquer le calque d’origine pour définir %@. Cliquer de nouveau la pipette pour arrêter."
+            "value": "Cliquer le calque d’origine pour définir le noir. Cliquer de nouveau la pipette pour arrêter."
+          }
+        }
+      }
+    },
+    "Click the original layer to set Gray. Click the eyedropper again to stop.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click the original layer to set Gray. Click the eyedropper again to stop."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquer le calque d’origine pour définir le gris. Cliquer de nouveau la pipette pour arrêter."
+          }
+        }
+      }
+    },
+    "Click the original layer to set White. Click the eyedropper again to stop.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click the original layer to set White. Click the eyedropper again to stop."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquer le calque d’origine pour définir le blanc. Cliquer de nouveau la pipette pour arrêter."
           }
         }
       }
