@@ -21,98 +21,9 @@ struct ContentView: View {
         guard let workspace = applicationDelegate?.workspace else { return true }
         return workspace.canReceiveDrag(into: workspace.current.id)
     }
-    var body: some View {
-        editorChrome
-        .background(Color(white: 0.14))
-        .background {
-            if let applicationDelegate, applicationDelegate.projects.workspace == nil {
-                ProjectWindowBridge(controller: applicationDelegate.projects).frame(width: 0, height: 0)
-            }
-        }
-        .frame(minWidth: 800, minHeight: 520)
-        .coordinateSpace(name: "editor")
-        .onDrop(of: [UTType.fileURL.identifier, UTType.image.identifier, ProjectWorkspace.layerType], isTargeted: $isDropTargeted) { providers, location in
-            guard session.levels == nil, !session.isProjectBusy, !session.showsNewDocument, !session.showsImporter, session.renamingLayerID == nil else { return false }
-            let point: CGPoint?
-            if let document = session.document, canvasFrame.contains(location) {
-                point = session.viewport.documentPoint(
-                    from: CGPoint(x: location.x - canvasFrame.minX, y: location.y - canvasFrame.minY),
-                    documentSize: document.size)
-            } else { point = nil }
-            if let workspace = applicationDelegate?.workspace {
-                let destination = workspace.current.id
-                guard workspace.canSwitch, workspace.canReceiveDrag(into: destination) else { return false }
-                Task { await workspace.receiveProviders(providers, into: destination, at: point) }
-            } else {
-                Task { await ImageFileDrop.importProviders(providers, into: session, at: point) }
-            }
-            return true
-        }
-        .overlay {
-            if isDropTargeted, acceptsDrop {
-                RoundedRectangle(cornerRadius: 8).strokeBorder(Color.accentColor, lineWidth: 3)
-                    .frame(width: max(0, canvasFrame.width - 6), height: max(0, canvasFrame.height - 6))
-                    .position(x: canvasFrame.midX, y: canvasFrame.midY)
-                    .allowsHitTesting(false)
-            }
-        }
-        .onAppear { applicationDelegate?.showEditor = { openWindow(id: "editor") } }
-        .preferredColorScheme(.dark)
-        .navigationTitle(projectDisplayName(from: session.projectURL))
-        .toolbar { editorToolbar }
-        .onChange(of: session.levels == nil) { _, closed in syncLevelsPanel(closed: closed) }
-        .onChange(of: session.hueSaturation == nil) { _, closed in syncAdjustmentPanel(closed: closed) }
-        .onChange(of: session.effectsEditing) { _, selection in
-            if let selection {
-                effectsPanel.onClose = { session.finishEffectsEditing(commit: false) }
-                effectsPanel.show(title: selection.kind.localizedName, content: EffectsSheet(session: session, kind: selection.kind))
-            } else { effectsPanel.close() }
-        }
-        .onChange(of: session.document?.layers) { _, layers in
-            if let editing = session.effectsEditing,
-               layers?.first(where: { $0.id == editing.layerID })?.effects?.contains(editing.kind) != true {
-                if let picker = session.colorPicker, case .effect = picker.target { session.closeColorPicker(commit: false) }
-                session.effectsEditing = nil
-                session.effectsEditingOriginal = nil
-            }
-        }
-        .onChange(of: session.selectionAmountOperation) { _, operation in
-            if let operation {
-                selectionAmountPanel.onClose = { session.selectionAmountOperation = nil }
-                selectionAmountPanel.show(title: localizedString(operation.rawValue + " Selection"),
-                    content: SelectionAmountSheet(session: session, operation: operation))
-            } else { selectionAmountPanel.close() }
-        }
-        .onChange(of: session.filterEdit == nil) { _, closed in syncFilterPanel(closed: closed) }
-        .onChange(of: session.document == nil) { _, empty in
-            if !empty { session.canvasFocusRequest += 1 }
-        }
-        .fileImporter(isPresented: $session.showsImporter,
-                      allowedContentTypes: [.jpeg, .png, .heic, .tiff], allowsMultipleSelection: true) { result in
-            switch result {
-            case .success(let urls): Task { await session.importImages(urls) }
-            case .failure(let error):
-                if (error as NSError).code != NSUserCancelledError { session.importError = error.localizedDescription }
-            }
-        }
-        .alert("Import couldn’t finish", isPresented: Binding(
-            get: { session.importError != nil }, set: { if !$0 { session.importError = nil } })) {
-                Button("OK", role: .cancel) { session.importError = nil }
-            } message: { Text(session.importError ?? "") }
-        .alert("Couldn’t paint", isPresented: Binding(get: { session.brushError != nil },
-            set: { if !$0 { session.brushError = nil } })) {
-                Button("OK") { session.brushError = nil }
-            } message: { Text(session.brushError ?? "") }
-        .alert("Couldn’t crop", isPresented: Binding(get: { session.cropError != nil },
-            set: { if !$0 { session.cropError = nil } })) {
-                Button("OK") { session.cropError = nil }
-            } message: { Text(session.cropError ?? "") }
-    }
-
-    /// Kept out of `body` so SwiftUI's type checker can finish; that expression is already near its limit.
-    @ViewBuilder
-    private var editorChrome: some View {
-        VStack(spacing: 0) {
+    // Extracted from `body`: as one expression the type checker times out (Xcode 26.1).
+    @ViewBuilder private var toolHeaders: some View {
+        Group {
             if session.tool == .move {
                 TransformInspector(session: session).id(session.activeLayerID)
                 Divider()
@@ -161,6 +72,12 @@ struct ContentView: View {
                 }.padding(.horizontal, 18).toolHeaderBar()
                 Divider()
             }
+        }
+    }
+
+    @ViewBuilder private var editorStack: some View {
+        VStack(spacing: 0) {
+            toolHeaders
             HStack(spacing: 0) {
                 toolRail
                 Divider()
@@ -193,6 +110,100 @@ struct ContentView: View {
                 .modifier(WidthReader(width: $windowWidth))
         }
     }
+
+    // Split again for 1.1: the chain outgrew the type checker once more.
+    @ViewBuilder private var editorChrome: some View {
+        editorStack
+        .background(Color(white: 0.14))
+        .background {
+            if let applicationDelegate, applicationDelegate.projects.workspace == nil {
+                ProjectWindowBridge(controller: applicationDelegate.projects).frame(width: 0, height: 0)
+            }
+        }
+        .frame(minWidth: 800, minHeight: 520)
+        .coordinateSpace(name: "editor")
+        .onDrop(of: [UTType.fileURL.identifier, UTType.image.identifier, ProjectWorkspace.layerType], isTargeted: $isDropTargeted) { providers, location in
+            guard session.levels == nil, !session.isProjectBusy, !session.showsNewDocument, !session.showsImporter, session.renamingLayerID == nil else { return false }
+            let point: CGPoint?
+            if let document = session.document, canvasFrame.contains(location) {
+                point = session.viewport.documentPoint(
+                    from: CGPoint(x: location.x - canvasFrame.minX, y: location.y - canvasFrame.minY),
+                    documentSize: document.size)
+            } else { point = nil }
+            if let workspace = applicationDelegate?.workspace {
+                let destination = workspace.current.id
+                guard workspace.canSwitch, workspace.canReceiveDrag(into: destination) else { return false }
+                Task { await workspace.receiveProviders(providers, into: destination, at: point) }
+            } else {
+                Task { await ImageFileDrop.importProviders(providers, into: session, at: point) }
+            }
+            return true
+        }
+        .overlay {
+            if isDropTargeted, acceptsDrop {
+                RoundedRectangle(cornerRadius: 8).strokeBorder(Color.accentColor, lineWidth: 3)
+                    .frame(width: max(0, canvasFrame.width - 6), height: max(0, canvasFrame.height - 6))
+                    .position(x: canvasFrame.midX, y: canvasFrame.midY)
+                    .allowsHitTesting(false)
+            }
+        }
+        .onAppear { applicationDelegate?.showEditor = { openWindow(id: "editor") } }
+        .preferredColorScheme(.dark)
+        .navigationTitle(projectDisplayName(from: session.projectURL))
+        .toolbar { editorToolbar }
+    }
+
+    var body: some View {
+        editorChrome
+        .onChange(of: session.levels == nil) { _, closed in syncLevelsPanel(closed: closed) }
+        .onChange(of: session.hueSaturation == nil) { _, closed in syncAdjustmentPanel(closed: closed) }
+        .onChange(of: session.effectsEditing) { _, selection in
+            if let selection {
+                effectsPanel.onClose = { session.finishEffectsEditing(commit: false) }
+                effectsPanel.show(title: selection.kind.localizedName, content: EffectsSheet(session: session, kind: selection.kind))
+            } else { effectsPanel.close() }
+        }
+        .onChange(of: session.document?.layers) { _, layers in
+            if let editing = session.effectsEditing,
+               layers?.first(where: { $0.id == editing.layerID })?.effects?.contains(editing.kind) != true {
+                if let picker = session.colorPicker, case .effect = picker.target { session.closeColorPicker(commit: false) }
+                session.effectsEditing = nil
+                session.effectsEditingOriginal = nil
+            }
+        }
+        .onChange(of: session.selectionAmountOperation) { _, operation in
+            if let operation {
+                selectionAmountPanel.onClose = { session.selectionAmountOperation = nil }
+                selectionAmountPanel.show(title: localizedString(operation.rawValue + " Selection"),
+                    content: SelectionAmountSheet(session: session, operation: operation))
+            } else { selectionAmountPanel.close() }
+        }
+        .onChange(of: session.filterEdit == nil) { _, closed in syncFilterPanel(closed: closed) }
+        .onChange(of: session.document == nil) { _, empty in
+            if !empty { session.canvasFocusRequest += 1 }
+        }
+        .fileImporter(isPresented: $session.showsImporter,
+                      allowedContentTypes: UTType.importableImages, allowsMultipleSelection: true) { result in
+            switch result {
+            case .success(let urls): Task { await session.importImages(urls) }
+            case .failure(let error):
+                if (error as NSError).code != NSUserCancelledError { session.importError = error.localizedDescription }
+            }
+        }
+        .alert("Import couldn’t finish", isPresented: Binding(
+            get: { session.importError != nil }, set: { if !$0 { session.importError = nil } })) {
+                Button("OK", role: .cancel) { session.importError = nil }
+            } message: { Text(session.importError ?? "") }
+        .alert("Couldn’t paint", isPresented: Binding(get: { session.brushError != nil },
+            set: { if !$0 { session.brushError = nil } })) {
+                Button("OK") { session.brushError = nil }
+            } message: { Text(session.brushError ?? "") }
+        .alert("Couldn’t crop", isPresented: Binding(get: { session.cropError != nil },
+            set: { if !$0 { session.cropError = nil } })) {
+                Button("OK") { session.cropError = nil }
+            } message: { Text(session.cropError ?? "") }
+    }
+
 
     @ToolbarContentBuilder
     private var editorToolbar: some ToolbarContent {
