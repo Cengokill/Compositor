@@ -6,11 +6,11 @@ nonisolated enum PSDError: LocalizedError, Equatable {
     case truncated, unsupportedVersion, unsupportedColorMode, unsupportedDepth, unsupportedCompression
     var errorDescription: String? {
         switch self {
-        case .truncated: "The Photoshop file could not be read. It may be damaged or incomplete."
-        case .unsupportedVersion: "Large Document (.psb) Photoshop files aren’t supported."
-        case .unsupportedColorMode: "Only 8-bit RGB Photoshop files can be imported."
-        case .unsupportedDepth: "Only 8-bit RGB Photoshop files can be imported."
-        case .unsupportedCompression: "This Photoshop file uses a layer compression method that isn’t supported."
+        case .truncated: localizedString("The Photoshop file could not be read. It may be damaged or incomplete.")
+        case .unsupportedVersion: localizedString("Large Document (.psb) Photoshop files aren’t supported.")
+        case .unsupportedColorMode: localizedString("Only 8-bit RGB Photoshop files can be imported.")
+        case .unsupportedDepth: localizedString("Only 8-bit RGB Photoshop files can be imported.")
+        case .unsupportedCompression: localizedString("This Photoshop file uses a layer compression method that isn’t supported.")
         }
     }
 }
@@ -18,11 +18,28 @@ nonisolated enum PSDError: LocalizedError, Equatable {
 nonisolated struct PSDConversion: Identifiable, Equatable, Sendable {
     let id: UUID
     let layerName: String
+    /// English sentence. Import tests match this text; the sheet shows `localizedMessage`.
     let message: String
-    init(id: UUID = UUID(), layerName: String, message: String) {
+    /// Set when `message` was built with `String(format:format, argument)`.
+    var format: String? = nil
+    var argument: String? = nil
+    init(id: UUID = UUID(), layerName: String, message: String, argument: String? = nil) {
         self.id = id
         self.layerName = layerName
-        self.message = message
+        if let argument {
+            self.format = message
+            self.argument = argument
+            self.message = String(format: message, argument)
+        } else {
+            self.message = message
+        }
+    }
+
+    var localizedMessage: String {
+        if let format, let argument {
+            return String(format: localizedString(format), argument)
+        }
+        return localizedString(message)
     }
 }
 

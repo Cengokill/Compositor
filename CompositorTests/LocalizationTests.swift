@@ -213,7 +213,7 @@ struct LocalizationTests {
         "Elliptical Marquee", "Enable Layer Mask", "Erase", "Expand Selection", "Fill", "Fill Mask",
         "Fill Text", "Flip Canvas Horizontal", "Flip Canvas Vertical", "Flip Horizontal", "Flip Vertical",
         "Gradient", "Gradient Mask", "Group Layers", "Hide Layer", "Hue/Saturation", "Image Size",
-        "Import Image", "Import Images", "Inverse", "Invert", "Invert Mask", "Lasso", "Layer Blend Mode",
+        "Import Image", "Import Images", "Import Photoshop File", "Inverse", "Invert", "Invert Mask", "Lasso", "Layer Blend Mode",
         "Layer Effects", "Layer Opacity", "Layer via Copy", "Levels", "Link Layer Mask", "Liquify",
         "Load Layer Selection", "Load Mask Selection", "Magic Wand", "Merge Down", "Merge Group",
         "Merge Layers", "Move Guide", "Move Layer", "Move Pixels", "Move Selection", "New Blank Layer",
@@ -226,7 +226,7 @@ struct LocalizationTests {
     /// Names whose French copy must not be a copy of the English source.
     private static let historyNamesThatMustDiffer: Set<String> = [
         "Clear Guides", "Delete Guide", "Duplicate Pixels", "Edit Text", "Elliptical Marquee", "Fill Text",
-        "Gradient Mask", "Layer Effects", "Move Guide", "Move Pixels", "New Guide", "New Text Layer",
+        "Gradient Mask", "Import Photoshop File", "Layer Effects", "Move Guide", "Move Pixels", "New Guide", "New Text Layer",
         "Polygonal Lasso", "Rectangular Marquee",
     ]
 }

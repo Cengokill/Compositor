@@ -417,6 +417,22 @@
         }
       }
     },
+    "Add a layer effect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add a layer effect"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un effet de calque"
+          }
+        }
+      }
+    },
     "Add layer mask": {
       "localizations": {
         "en": {
@@ -449,6 +465,22 @@
         }
       }
     },
+    "Adjustment parameters may not match Photoshop exactly.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjustment parameters may not match Photoshop exactly."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les paramètres du réglage peuvent ne pas correspondre exactement à Photoshop."
+          }
+        }
+      }
+    },
     "Advanced": {
       "localizations": {
         "en": {
@@ -461,6 +493,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Avancé"
+          }
+        }
+      }
+    },
+    "Align center": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align center"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aligner au centre"
+          }
+        }
+      }
+    },
+    "Align left": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align left"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aligner à gauche"
+          }
+        }
+      }
+    },
+    "Align right": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Align right"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aligner à droite"
           }
         }
       }
@@ -513,6 +593,22 @@
         }
       }
     },
+    "Amount": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quantité"
+          }
+        }
+      }
+    },
     "An image could not be saved. The previous project has not been replaced.": {
       "localizations": {
         "en": {
@@ -541,6 +637,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Une image du projet est manquante ou endommagée. Le document actuel n’a pas été remplacé."
+          }
+        }
+      }
+    },
+    "Analyze the active layer only, or every visible layer as shown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyze the active layer only, or every visible layer as shown"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Analyser seulement le calque actif, ou tous les calques visibles tels qu’ils apparaissent"
           }
         }
       }
@@ -849,6 +961,22 @@
         }
       }
     },
+    "Blend mode “%@” isn’t supported and will be applied as Normal.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blend mode “%@” isn’t supported and will be applied as Normal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode de fusion « %@ » n’est pas pris en charge et sera appliqué en Normal."
+          }
+        }
+      }
+    },
     "Blue": {
       "localizations": {
         "en": {
@@ -1089,6 +1217,22 @@
         }
       }
     },
+    "Canvas text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canvas text"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte de la zone de travail"
+          }
+        }
+      }
+    },
     "Center": {
       "localizations": {
         "en": {
@@ -1149,6 +1293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Rechercher les mises à jour…"
+          }
+        }
+      }
+    },
+    "Choose a JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) file.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) file."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez un fichier JPEG, PNG, HEIC, TIFF ou Photoshop (PSD)."
           }
         }
       }
@@ -1245,6 +1405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Éliminer le voile qui laisse transparaître l’arrière-plan dans les zones fines"
+          }
+        }
+      }
+    },
+    "Click a shortcut, then press its new key combination. Changes apply when you save.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Click a shortcut, then press its new key combination. Changes apply when you save."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cliquer un raccourci, puis saisir la nouvelle combinaison de touches. Les changements s’appliquent à l’enregistrement."
           }
         }
       }
@@ -1761,6 +1937,22 @@
         }
       }
     },
+    "Compositor will convert these Photoshop features. Nothing is applied until you continue.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compositor will convert these Photoshop features. Nothing is applied until you continue."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compositor va convertir ces fonctions Photoshop. Rien n’est appliqué tant que vous ne continuez pas."
+          }
+        }
+      }
+    },
     "Content-Aware": {
       "localizations": {
         "en": {
@@ -1805,6 +1997,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remplissage d’après le contenu…"
+          }
+        }
+      }
+    },
+    "Contextual keys & mouse gestures": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contextual keys & mouse gestures"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touches contextuelles et gestes de la souris"
           }
         }
       }
@@ -1869,6 +2077,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Contracter de %lld px"
+          }
+        }
+      }
+    },
+    "Contract…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contract…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contracter…"
           }
         }
       }
@@ -2433,6 +2657,22 @@
         }
       }
     },
+    "Delete selected effect": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete selected effect"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer l’effet sélectionné"
+          }
+        }
+      }
+    },
     "Delete selected layer": {
       "localizations": {
         "en": {
@@ -2573,6 +2813,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Répartition"
+          }
+        }
+      }
+    },
+    "Document Bounds": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Document Bounds"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limites du document"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
           }
         }
       }
@@ -3009,6 +3281,22 @@
         }
       }
     },
+    "Edge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bord"
+          }
+        }
+      }
+    },
     "Edit": {
       "localizations": {
         "en": {
@@ -3085,6 +3373,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Modifier le texte"
+          }
+        }
+      }
+    },
+    "Editable Photoshop text becomes pixels and can’t be retyped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Editable Photoshop text becomes pixels and can’t be retyped."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le texte Photoshop modifiable devient des pixels et ne peut plus être ressaisi."
           }
         }
       }
@@ -3249,6 +3553,22 @@
         }
       }
     },
+    "Expand…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expand…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dilater…"
+          }
+        }
+      }
+    },
     "Export JPEG": {
       "localizations": {
         "en": {
@@ -3393,6 +3713,38 @@
         }
       }
     },
+    "Fade the edge of the selection by this many pixels": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fade the edge of the selection by this many pixels"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adoucir le bord de la sélection de ce nombre de pixels"
+          }
+        }
+      }
+    },
+    "Feather": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feather"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contour progressif"
+          }
+        }
+      }
+    },
     "Feather Selection": {
       "localizations": {
         "en": {
@@ -3405,6 +3757,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Contour progressif de la sélection"
+          }
+        }
+      }
+    },
+    "Feather…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Feather…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contour progressif…"
           }
         }
       }
@@ -3713,6 +4081,54 @@
         }
       }
     },
+    "Folder blend mode “%@” isn’t supported. The folder will be pass-through.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder blend mode “%@” isn’t supported. The folder will be pass-through."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode de fusion « %@ » du dossier n’est pas pris en charge. Le dossier sera en transfert."
+          }
+        }
+      }
+    },
+    "Font": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Police"
+          }
+        }
+      }
+    },
+    "Font face, including bold and italic variants": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Font face, including bold and italic variants"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Police, y compris les variantes en gras et en italique"
+          }
+        }
+      }
+    },
     "Foreground": {
       "localizations": {
         "en": {
@@ -3969,6 +4385,22 @@
         }
       }
     },
+    "Grid": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grid"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grille"
+          }
+        }
+      }
+    },
     "Group Layers": {
       "localizations": {
         "en": {
@@ -4013,6 +4445,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grouper les calques sélectionnés (⌘G)"
+          }
+        }
+      }
+    },
+    "Guides": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guides"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guides"
           }
         }
       }
@@ -4353,6 +4801,22 @@
         }
       }
     },
+    "Import": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer"
+          }
+        }
+      }
+    },
     "Import Image": {
       "localizations": {
         "en": {
@@ -4397,6 +4861,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Importer des images…"
+          }
+        }
+      }
+    },
+    "Import Photoshop File": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Photoshop File"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer un fichier Photoshop"
           }
         }
       }
@@ -4513,6 +4993,22 @@
         }
       }
     },
+    "Inside": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inside"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intérieur"
+          }
+        }
+      }
+    },
     "Inverse": {
       "localizations": {
         "en": {
@@ -4589,6 +5085,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Conserve ce point fixe. L’illustration n’est pas mise à l’échelle ; le contenu recadré reste hors de la zone de travail."
+          }
+        }
+      }
+    },
+    "Keyboard Shortcuts…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keyboard Shortcuts…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raccourcis clavier…"
+          }
+        }
+      }
+    },
+    "Large Document (.psb) Photoshop files aren’t supported.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Large Document (.psb) Photoshop files aren’t supported."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les fichiers Photoshop Large Document (.psb) ne sont pas pris en charge."
           }
         }
       }
@@ -4689,6 +5217,38 @@
         }
       }
     },
+    "Layer effects": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer effects"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effets de calque"
+          }
+        }
+      }
+    },
+    "Layer effects were discarded, so the appearance may differ.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer effects were discarded, so the appearance may differ."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les effets de calque ont été ignorés, l’apparence peut donc différer."
+          }
+        }
+      }
+    },
     "Layer via Copy": {
       "localizations": {
         "en": {
@@ -4733,6 +5293,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Calques"
+          }
+        }
+      }
+    },
+    "Leading": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leading"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interligne"
           }
         }
       }
@@ -4829,6 +5405,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ligne"
+          }
+        }
+      }
+    },
+    "Line height, baseline to baseline. Empty or 0 is Auto: 120% of the font size.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Line height, baseline to baseline. Empty or 0 is Auto: 120% of the font size."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interligne, de ligne de base à ligne de base. Vide ou 0 : Auto, 120 % de la taille de police."
           }
         }
       }
@@ -4973,6 +5565,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Chargement de l’histogramme…"
+          }
+        }
+      }
+    },
+    "Lock Guides": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lock Guides"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verrouiller les guides"
           }
         }
       }
@@ -5921,6 +6529,22 @@
         }
       }
     },
+    "Only 8-bit RGB Photoshop files can be imported.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only 8-bit RGB Photoshop files can be imported."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seuls les fichiers Photoshop RVB 8 bits peuvent être importés."
+          }
+        }
+      }
+    },
     "Only print dimensions and resolution change. Pixels stay unchanged.": {
       "localizations": {
         "en": {
@@ -6049,6 +6673,38 @@
         }
       }
     },
+    "Open “%@”?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open “%@”?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir %@ ?"
+          }
+        }
+      }
+    },
+    "Option temporarily selects the eyedropper in painting tools. Shift constrains shapes/movement or adds to a selection; Option subtracts from selections or draws from center. Command-drag moves selected pixels; Command-Option-drag copies them. Option-drag duplicates layers/folders/effects; Option-click at a layer boundary toggles clipping. Command-click a thumbnail loads its selection. Control bypasses snapping. Right-drag adjusts brush size. Modifier-and-mouse gestures are fixed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Option temporarily selects the eyedropper in painting tools. Shift constrains shapes/movement or adds to a selection; Option subtracts from selections or draws from center. Command-drag moves selected pixels; Command-Option-drag copies them. Option-drag duplicates layers/folders/effects; Option-click at a layer boundary toggles clipping. Command-click a thumbnail loads its selection. Control bypasses snapping. Right-drag adjusts brush size. Modifier-and-mouse gestures are fixed."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Option sélectionne temporairement la pipette dans les outils de peinture. Maj contraint les formes et les déplacements, ou ajoute à une sélection ; Option soustrait d’une sélection ou dessine depuis le centre. Commande-glisser déplace les pixels sélectionnés ; Commande-Option-glisser les copie. Option-glisser duplique calques, dossiers et effets ; Option-clic sur la limite d’un calque active ou désactive le masque d’écrêtage. Commande-clic sur une vignette charge sa sélection. Contrôle ignore le magnétisme. Glisser avec le bouton droit règle la taille du pinceau. Les gestes modificateur et souris sont fixes."
+          }
+        }
+      }
+    },
     "Option-click to set the source": {
       "localizations": {
         "en": {
@@ -6141,6 +6797,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pixels d’origine · histogramme pondéré par la sélection et l’alpha"
+          }
+        }
+      }
+    },
+    "Outer Glow": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outer Glow"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lueur externe"
+          }
+        }
+      }
+    },
+    "Outside": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outside"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extérieur"
           }
         }
       }
@@ -6337,6 +7025,22 @@
         }
       }
     },
+    "Position": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position"
+          }
+        }
+      }
+    },
     "Positive straightens lines that bow outward (barrel); negative, lines that bow inward (pincushion).": {
       "localizations": {
         "en": {
@@ -6349,6 +7053,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Positif redresse les lignes qui se courbent vers l’extérieur (barillet) ; négatif, celles qui se courbent vers l’intérieur (coussinet)."
+          }
+        }
+      }
+    },
+    "Positive values tighten the detected mask inward; negative values expand it outward": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Positive values tighten the detected mask inward; negative values expand it outward"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une valeur positive resserre le masque détecté vers l’intérieur ; une valeur négative l’élargit vers l’extérieur"
           }
         }
       }
@@ -6397,6 +7117,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Appuyer sur M pour passer de Rectangle à Ellipse"
+          }
+        }
+      }
+    },
+    "Press Tab to switch between Wand and Object": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Press Tab to switch between Wand and Object"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appuyer sur Tab pour basculer entre Baguette et Objet"
           }
         }
       }
@@ -6573,6 +7309,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lire les couleurs du calque actif seulement, ou de tous les calques visibles tels qu’affichés"
+          }
+        }
+      }
+    },
+    "Reading the Photoshop file…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading the Photoshop file…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture du fichier Photoshop…"
+          }
+        }
+      }
+    },
+    "Reading the file to see what needs converting.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading the file to see what needs converting."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture du fichier pour voir ce qui doit être converti."
           }
         }
       }
@@ -6961,6 +7729,22 @@
         }
       }
     },
+    "Restore Defaults": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Defaults"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rétablir les réglages par défaut"
+          }
+        }
+      }
+    },
     "Result: %lld × %lld pixels": {
       "localizations": {
         "en": {
@@ -7005,6 +7789,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Arrondir les coins du rectangle de ce nombre de pixels ; 0 les laisse droits"
+          }
+        }
+      }
+    },
+    "Rulers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rulers"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Règles"
           }
         }
       }
@@ -7377,6 +8177,22 @@
         }
       }
     },
+    "Shift-U (or Tab) steps through Rectangle, Ellipse and Line": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shift-U (or Tab) steps through Rectangle, Ellipse and Line"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maj-U (ou Tab) passe de Rectangle à Ellipse, puis à Ligne"
+          }
+        }
+      }
+    },
     "Shift-U switches between Rectangle and Ellipse": {
       "localizations": {
         "en": {
@@ -7389,6 +8205,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Maj-U bascule entre Rectangle et Ellipse"
+          }
+        }
+      }
+    },
+    "Show": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher"
           }
         }
       }
@@ -7585,6 +8417,22 @@
         }
       }
     },
+    "Smoothing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Smoothing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lissage"
+          }
+        }
+      }
+    },
     "Smudge": {
       "localizations": {
         "en": {
@@ -7601,6 +8449,38 @@
         }
       }
     },
+    "Snap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snap"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magnétisme"
+          }
+        }
+      }
+    },
+    "Snap To": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Snap To"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magnétisme sur"
+          }
+        }
+      }
+    },
     "Soft Light": {
       "localizations": {
         "en": {
@@ -7613,6 +8493,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Lumière tamisée"
+          }
+        }
+      }
+    },
+    "Some dropped items couldn’t be read. Drag JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) files from Finder.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some dropped items couldn’t be read. Drag JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) files from Finder."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains éléments déposés n’ont pas pu être lus. Glissez des fichiers JPEG, PNG, HEIC, TIFF ou Photoshop (PSD) depuis le Finder."
           }
         }
       }
@@ -7677,6 +8573,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Contour"
+          }
+        }
+      }
+    },
+    "Subject": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subject"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sujet"
           }
         }
       }
@@ -7761,6 +8673,38 @@
         }
       }
     },
+    "Text color": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text color"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couleur du texte"
+          }
+        }
+      }
+    },
+    "Text fields keep standard macOS editing keys. Dialogs share the Apply/Cancel assignments above. Numeric fields use Up/Down, with Shift for larger steps. Standard macOS commands include ⌘Q to quit and ⌃⌘F for full screen. The shortcut editor itself always uses Return to save and Esc to cancel when not recording.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text fields keep standard macOS editing keys. Dialogs share the Apply/Cancel assignments above. Numeric fields use Up/Down, with Shift for larger steps. Standard macOS commands include ⌘Q to quit and ⌃⌘F for full screen. The shortcut editor itself always uses Return to save and Esc to cancel when not recording."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les champs de texte conservent les touches d’édition standard de macOS. Les dialogues partagent les raccourcis Appliquer et Annuler ci-dessus. Les champs numériques utilisent Haut et Bas, et Maj pour de plus grands pas. Les commandes macOS standard incluent ⌘Q pour quitter et ⌃⌘F pour le plein écran. L’éditeur de raccourcis utilise toujours Retour pour enregistrer et Esc pour annuler, tant qu’il n’enregistre pas un raccourci."
+          }
+        }
+      }
+    },
     "That selection is too detailed to outline. Try a different Tolerance, or turn on Contiguous.": {
       "localizations": {
         "en": {
@@ -7773,6 +8717,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cette sélection est trop détaillée pour être tracée. Essayez une autre Tolérance, ou activez Pixels contigus."
+          }
+        }
+      }
+    },
+    "The Photoshop file could not be read. It may be damaged or incomplete.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Photoshop file could not be read. It may be damaged or incomplete."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le fichier Photoshop n’a pas pu être lu. Il est peut-être endommagé ou incomplet."
+          }
+        }
+      }
+    },
+    "The Photoshop stroke isn’t supported on shape layers and was omitted.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Photoshop stroke isn’t supported on shape layers and was omitted."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le contour Photoshop n’est pas pris en charge sur les calques de forme et a été omis."
+          }
+        }
+      }
+    },
+    "The brush trails the pointer on a string this long, so a shaky hand still draws a smooth line": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The brush trails the pointer on a string this long, so a shaky hand still draws a smooth line"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pinceau suit le pointeur au bout d’une corde de cette longueur : une main tremblante trace quand même un trait régulier"
           }
         }
       }
@@ -7825,6 +8817,38 @@
         }
       }
     },
+    "The layer mask couldn’t be converted to 8-bit grayscale and was skipped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The layer mask couldn’t be converted to 8-bit grayscale and was skipped."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le masque de calque n’a pas pu être converti en niveaux de gris 8 bits et a été ignoré."
+          }
+        }
+      }
+    },
+    "The smart object was rasterized. Linked contents can’t be edited.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The smart object was rasterized. Linked contents can’t be edited."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’objet dynamique a été pixellisé. Le contenu lié ne peut plus être modifié."
+          }
+        }
+      }
+    },
     "There isn’t enough memory to make that selection.": {
       "localizations": {
         "en": {
@@ -7869,6 +8893,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ce calque"
+          }
+        }
+      }
+    },
+    "This Photoshop file uses a layer compression method that isn’t supported.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Photoshop file uses a layer compression method that isn’t supported."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce fichier Photoshop utilise une compression de calque qui n’est pas prise en charge."
+          }
+        }
+      }
+    },
+    "This Photoshop layer type isn’t supported and was imported as pixels.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This Photoshop layer type isn’t supported and was imported as pixels."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce type de calque Photoshop n’est pas pris en charge et a été importé en pixels."
+          }
+        }
+      }
+    },
+    "This adjustment type isn’t supported and was skipped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This adjustment type isn’t supported and was skipped."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce type de réglage n’est pas pris en charge et a été ignoré."
+          }
+        }
+      }
+    },
+    "This clipping mask’s base isn’t supported, so clipping was skipped.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This clipping mask’s base isn’t supported, so clipping was skipped."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La base de ce masque d’écrêtage n’est pas prise en charge, l’écrêtage a donc été ignoré."
           }
         }
       }
@@ -8013,6 +9101,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Haut droite"
+          }
+        }
+      }
+    },
+    "Tracking": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tracking"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approche"
           }
         }
       }
@@ -8349,6 +9453,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Utilisez 1–30 000 pixels par côté, jusqu’à 100 mégapixels, et 1–9 600 pixels/pouce."
+          }
+        }
+      }
+    },
+    "Vector shape was rasterized to pixels.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vector shape was rasterized to pixels."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La forme vectorielle a été pixellisée."
           }
         }
       }

@@ -728,7 +728,8 @@ final class EditorSession {
                     return total + image.width * image.height
                 } ?? 0
                 if PSDReader.matches(url) {
-                    beginPSDReading(title: "Open “\(url.lastPathComponent)”?", confirmTitle: "Import")
+                    beginPSDReading(title: String(format: localizedString("Open “%@”?"), url.lastPathComponent),
+                                    confirmTitle: localizedString("Import"))
                     let imported: PSDImport
                     do {
                         let parsed = try await ImageImporter.shared.loadPhotoshop(url, remainingPixels: 100_000_000 - usedPixels)

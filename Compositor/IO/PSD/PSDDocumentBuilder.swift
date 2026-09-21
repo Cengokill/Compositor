@@ -25,42 +25,43 @@ nonisolated enum PSDDocumentBuilder {
         var layers: [ImageLayer] = []
         let canvas = CGSize(width: document.width, height: document.height)
         for record in document.layers {
-            var notes: [String] = []
+            var notes: [(message: String, argument: String?)] = []
             if record.kind == .text {
-                notes.append("Editable Photoshop text becomes pixels and can’t be retyped.")
+                notes.append(("Editable Photoshop text becomes pixels and can’t be retyped.", nil))
             }
             if record.kind == .smartObject {
-                notes.append("The smart object was rasterized. Linked contents can’t be edited.")
+                notes.append(("The smart object was rasterized. Linked contents can’t be edited.", nil))
             }
             if record.kind == .effects {
-                notes.append("Layer effects were discarded, so the appearance may differ.")
+                notes.append(("Layer effects were discarded, so the appearance may differ.", nil))
             }
             if record.kind == .vector {
                 if record.shape != nil {
-                    notes.append(contentsOf: record.shapeNotes)
+                    notes.append(contentsOf: record.shapeNotes.map { ($0, nil) })
                 } else {
-                    notes.append("Vector shape was rasterized to pixels.")
+                    notes.append(("Vector shape was rasterized to pixels.", nil))
                 }
             }
             if record.kind == .other {
-                notes.append("This Photoshop layer type isn’t supported and was imported as pixels.")
+                notes.append(("This Photoshop layer type isn’t supported and was imported as pixels.", nil))
             }
             if record.isGroup {
                 if record.blendKey != "pass" && record.blendKey != "norm" {
-                    notes.append("Folder blend mode “\(record.blendKey)” isn’t supported. The folder will be pass-through.")
+                    notes.append(("Folder blend mode “%@” isn’t supported. The folder will be pass-through.", record.blendKey))
                 }
             } else if record.blendMode == nil, record.blendKey != "pass" {
-                notes.append("Blend mode “\(record.blendKey.trimmingCharacters(in: .whitespaces))” isn’t supported and will be applied as Normal.")
+                notes.append(("Blend mode “%@” isn’t supported and will be applied as Normal.",
+                              record.blendKey.trimmingCharacters(in: .whitespaces)))
             }
             if record.kind == .adjustment {
                 if record.adjustment == nil {
-                    notes.append("This adjustment type isn’t supported and was skipped.")
+                    notes.append(("This adjustment type isn’t supported and was skipped.", nil))
                 } else {
-                    notes.append("Adjustment parameters may not match Photoshop exactly.")
+                    notes.append(("Adjustment parameters may not match Photoshop exactly.", nil))
                 }
             }
             for note in notes {
-                conversions.append(PSDConversion(layerName: record.name, message: note))
+                conversions.append(PSDConversion(layerName: record.name, message: note.message, argument: note.argument))
             }
             if record.kind == .adjustment, record.adjustment == nil { continue }
             var layer: ImageLayer
