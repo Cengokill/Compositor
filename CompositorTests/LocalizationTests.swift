@@ -156,6 +156,18 @@ struct LocalizationTests {
         }
     }
 
+    @Test func layerEffectMenuTitlesTranslateKindThenAppendEllipsis() throws {
+        let french = try frenchBundle()
+        let strings = try catalog()
+        for kind in LayerEffectKind.allCases {
+            let frenchTitle = localizedString(kind.rawValue, bundle: french) + "…"
+            #expect(frenchTitle != kind.rawValue + "…", "\(kind.rawValue) menu item should not stay English")
+            #expect(frenchTitle.hasSuffix("…"))
+            #expect(strings[kind.rawValue + "…"] == nil,
+                    "Ellipsis is appended after translation; \(kind.rawValue)… should not be a catalog key")
+        }
+    }
+
     @Test func persistedEnumRawValuesStayEnglish() {
         #expect(LayerBlendMode.multiply.rawValue == "Multiply")
         #expect(LayerBlendMode.colorDodge.rawValue == "Color Dodge")
