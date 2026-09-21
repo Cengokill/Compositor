@@ -63,7 +63,9 @@ struct ImageSizeSheet: View {
             Text("Image Size").font(.title2.bold())
             Text("Current: \(document.width) × \(document.height) pixels").foregroundStyle(.secondary)
             Picker("Units", selection: $unit) {
-                ForEach(units.filter { resample || ($0 != "Pixels" && $0 != "Percent") }, id: \.self) { Text(verbatim: localizedString($0)) }
+                ForEach(units.filter { resample || ($0 != "Pixels" && $0 != "Percent") }, id: \.self) {
+                    Text(verbatim: localizedString($0)).tag($0)
+                }
             }
             HStack {
                 Text("Width").frame(width: 75, alignment: .leading)

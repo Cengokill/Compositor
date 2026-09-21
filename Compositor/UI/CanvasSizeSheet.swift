@@ -96,7 +96,7 @@ struct CanvasSizeSheet: View {
             }
             Picker("Canvas extension", selection: $extensionChoice) {
                 ForEach(["Transparent", "Foreground", "Background", "Black", "White", "Custom"], id: \.self) {
-                    Text(verbatim: localizedString($0))
+                    Text(verbatim: localizedString($0)).tag($0)
                 }
             }
             if extensionChoice == "Custom" {

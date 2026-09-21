@@ -168,6 +168,34 @@ struct LocalizationTests {
         }
     }
 
+    /// String-backed pickers show `localizedString` but must tag the English source. A missing tag
+    /// would persist the French label, and later English comparisons (`== "Custom"`, crop ratios, units) miss.
+    @Test func stringBackedPickerIdentityKeysStayEnglishWhenLabelsTranslate() throws {
+        let french = try frenchBundle()
+        for key in ["Free", "Custom", "Foreground", "Background", "Black", "White",
+                    "Percent", "Inches", "Centimeters"] {
+            let label = localizedString(key, bundle: french)
+            #expect(label != key, "\(key) is translated; Picker must tag the English value, not the label")
+        }
+        for key in ["Original", "Pixels", "Transparent", "1:1", "4:3", "16:9"] {
+            #expect(localizedString(key, bundle: french) == key)
+        }
+    }
+
+    @Test @MainActor func cropRatioComparesEnglishIdentityKeys() {
+        let session = EditorSession()
+        session.createDocument(width: 1600, height: 900)
+        session.selectTool(.crop)
+        session.cropRatioChoice = "16:9"
+        #expect(abs((session.cropRatio ?? 0) - 16.0 / 9.0) < 0.0001)
+        session.cropRatioChoice = "Original"
+        #expect(abs((session.cropRatio ?? 0) - 1600.0 / 900.0) < 0.0001)
+        session.cropRatioChoice = "Libre"
+        #expect(session.cropRatio == nil, "A French crop-ratio label is not a valid stored choice")
+        session.cropRatioChoice = "1:1"
+        #expect(session.cropRatio == 1)
+    }
+
     @Test func persistedEnumRawValuesStayEnglish() {
         #expect(LayerBlendMode.multiply.rawValue == "Multiply")
         #expect(LayerBlendMode.colorDodge.rawValue == "Color Dodge")
