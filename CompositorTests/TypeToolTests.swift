@@ -24,6 +24,7 @@ struct TypeToolTests {
         #expect(session.activeLayer?.liveText?.style == draft.style)
         #expect(session.activeLayer?.origin == CGPoint(x: 30, y: 40))
         #expect(session.history.undoCount == before + 1)
+        #expect(session.history.undoName == "New Text Layer")
         session.editActiveText()
         session.textDraft = nil
         #expect(session.history.undoCount == before + 1)
@@ -31,6 +32,7 @@ struct TypeToolTests {
         draft = try #require(session.textDraft)
         draft.style.content = "Changed"
         #expect(session.applyText(draft))
+        #expect(session.history.undoName == "Edit Text")
         session.undo()
         #expect(session.activeLayer?.liveText?.style.content == "Hello\nCompositor")
         session.undo()
@@ -142,6 +144,17 @@ struct TypeToolTests {
         session.textDraft?.style.content = "Edited on canvas"
         session.cancelText()
         #expect(session.activeLayer?.liveText?.style.content == "Text that wraps inside its paragraph box")
+    }
+
+    @Test func fillTextRecordsEnglishHistoryName() throws {
+        let session = makeSession()
+        session.beginText(at: .zero)
+        session.textDraft?.style.content = "Text"
+        #expect(session.applyText(try #require(session.textDraft)))
+        let id = try #require(session.activeLayerID)
+        #expect(session.recolorText(id, to: PaletteColor(red: 1, green: 0, blue: 0)))
+        #expect(session.history.undoName == "Fill Text")
+        #expect(session.activeLayer?.liveText?.style.red == 1)
     }
 
     @Test func emptyNewParagraphIsDiscarded() {

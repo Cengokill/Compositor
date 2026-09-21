@@ -160,6 +160,8 @@ nonisolated struct LayerEffects: Codable, Equatable, Sendable {
 
 nonisolated enum LayerEffectKind: String, CaseIterable, Sendable {
     case stroke = "Stroke", shadow = "Drop Shadow", colorOverlay = "Color Overlay", innerShadow = "Inner Shadow"
+    /// History names are `"\(prefix)\(rawValue)"` for each prefix, e.g. `"Add Drop Shadow"`.
+    static let historyPrefixes = ["Add ", "Edit ", "Hide ", "Show ", "Copy ", "Remove ", "Cancel "]
 }
 
 struct LayerEffectSelection: Equatable {

@@ -17,8 +17,8 @@ nonisolated extension RawRepresentable where RawValue == String {
     var localizedName: String { localizedString(rawValue) }
 }
 
-/// History entries normally use a fixed key. Adjustment entries include the adjustment
-/// kind in the key, so rebuild those two formatted forms after translating the kind.
+/// History entries normally use a fixed key. Adjustment and layer-effect entries include a
+/// kind token, so rebuild those formatted forms after translating the kind.
 nonisolated func localizedHistoryAction(_ name: String, bundle: Bundle = .main) -> String {
     let suffix = " Adjustment"
     if name.hasPrefix("Edit "), name.hasSuffix(suffix) {
@@ -32,6 +32,14 @@ nonisolated func localizedHistoryAction(_ name: String, bundle: Bundle = .main) 
         let end = name.index(name.endIndex, offsetBy: -suffix.count)
         return String(format: localizedString("New %@ Adjustment", bundle: bundle),
                       localizedString(String(name[start..<end]), bundle: bundle))
+    }
+    let kinds = Set(LayerEffectKind.allCases.map(\.rawValue))
+    for prefix in LayerEffectKind.historyPrefixes {
+        guard name.hasPrefix(prefix) else { continue }
+        let kind = String(name.dropFirst(prefix.count))
+        guard kinds.contains(kind) else { continue }
+        return String(format: localizedString(prefix + "%@", bundle: bundle),
+                      localizedString(kind, bundle: bundle))
     }
     return localizedString(name, bundle: bundle)
 }

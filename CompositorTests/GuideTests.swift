@@ -24,12 +24,31 @@ struct GuideTests {
         session.addGuide(horizontal)
         #expect(session.document?.guides.count == 2)
         #expect(session.canClearGuides)
+        #expect(session.history.undoName == "New Guide")
         session.undo()
         #expect(session.document?.guides == [vertical])
         session.clearGuides()
         #expect(session.document?.guides.isEmpty == true)
+        #expect(session.history.undoName == "Clear Guides")
         session.undo()
         #expect(session.document?.guides == [vertical])
+    }
+
+    @Test func moveAndDeleteGuideRecordEnglishHistoryNames() {
+        let session = EditorSession()
+        session.createDocument(width: 200, height: 100)
+        let guide = CanvasGuide(id: UUID(), axis: .vertical, position: 40)
+        session.addGuide(guide)
+        session.snapEnabled = false
+        session.beginGuideMove(guide)
+        session.moveGuideDrag(to: 80)
+        session.finishGuideDrag(delete: false)
+        #expect(session.document?.guides.first?.position == 80)
+        #expect(session.history.undoName == "Move Guide")
+        session.beginGuideMove(guide)
+        session.finishGuideDrag(delete: true)
+        #expect(session.document?.guides.isEmpty == true)
+        #expect(session.history.undoName == "Delete Guide")
     }
 
     @Test func lockPreventsCreatingAndMoving() {

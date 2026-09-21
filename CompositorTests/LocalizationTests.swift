@@ -46,6 +46,8 @@ struct LocalizationTests {
         #expect(localizedHistoryAction("Edit Curves Adjustment") == String(format: localizedString("Edit %@ Adjustment"), localizedString("Curves")))
         #expect(localizedHistoryAction("New Hue/Saturation Adjustment") == String(format: localizedString("New %@ Adjustment"), localizedString("Hue/Saturation")))
         #expect(localizedHistoryAction("Transform Layer") == localizedString("Transform Layer"))
+        #expect(localizedHistoryAction("Add Drop Shadow") == String(format: localizedString("Add %@"), localizedString("Drop Shadow")))
+        #expect(localizedHistoryAction("Edit Text") == localizedString("Edit Text"))
     }
 
     @Test func historyActionLocalizesAdjustmentKindsInFrench() throws {
@@ -57,6 +59,23 @@ struct LocalizationTests {
         #expect(localizedHistoryAction("Move Pixels", bundle: french) == "Déplacer les pixels")
         #expect(localizedString("Edit Curves Adjustment", bundle: french)
                 != localizedHistoryAction("Edit Curves Adjustment", bundle: french))
+        #expect(localizedHistoryAction("Edit Text", bundle: french) == "Modifier le texte")
+        #expect(localizedHistoryAction("New Text Layer", bundle: french) == "Nouveau calque de texte")
+        #expect(localizedHistoryAction("Fill Text", bundle: french) == "Remplir le texte")
+        #expect(localizedHistoryAction("New Guide", bundle: french) == "Nouveau guide")
+        #expect(localizedHistoryAction("Move Guide", bundle: french) == "Déplacer le guide")
+        #expect(localizedHistoryAction("Delete Guide", bundle: french) == "Supprimer le guide")
+        #expect(localizedHistoryAction("Clear Guides", bundle: french) == "Effacer les guides")
+        #expect(localizedHistoryAction("Add Drop Shadow", bundle: french) == "Ajouter Ombre portée")
+        #expect(localizedHistoryAction("Edit Stroke", bundle: french) == "Modifier Contour")
+        #expect(localizedHistoryAction("Hide Color Overlay", bundle: french) == "Masquer Incrustation de couleur")
+        #expect(localizedHistoryAction("Show Inner Shadow", bundle: french) == "Afficher Ombre interne")
+        #expect(localizedHistoryAction("Copy Drop Shadow", bundle: french) == "Copier Ombre portée")
+        #expect(localizedHistoryAction("Remove Stroke", bundle: french) == "Supprimer Contour")
+        #expect(localizedHistoryAction("Cancel Color Overlay", bundle: french) == "Annuler Incrustation de couleur")
+        #expect(localizedString("Add Drop Shadow", bundle: french)
+                != localizedHistoryAction("Add Drop Shadow", bundle: french))
+        #expect(localizedHistoryAction("Add Hide-All Mask", bundle: french) == "Ajouter un masque tout cacher")
     }
 
     @Test func projectDisplayNameLocalizesUntitledWithoutTranslatingFileNames() throws {
@@ -115,6 +134,26 @@ struct LocalizationTests {
         for kind in FilterKind.allCases {
             #expect(strings[kind.rawValue]?["fr"] != nil, "Missing French translation for \(kind.rawValue)")
         }
+        for kind in LayerEffectKind.allCases {
+            #expect(strings[kind.rawValue]?["fr"] != nil, "Missing French translation for \(kind.rawValue)")
+        }
+        for prefix in LayerEffectKind.historyPrefixes {
+            let template = prefix + "%@"
+            #expect(strings[template]?["fr"] != nil, "Missing French translation for \(template)")
+        }
+    }
+
+    @Test func historyActionLocalizesEveryLayerEffectKindInFrench() throws {
+        let french = try frenchBundle()
+        for kind in LayerEffectKind.allCases {
+            for prefix in LayerEffectKind.historyPrefixes {
+                let english = prefix + kind.rawValue
+                let frenchTitle = localizedHistoryAction(english, bundle: french)
+                #expect(frenchTitle != english, "\(english) should be translated")
+                #expect(frenchTitle == String(format: localizedString(prefix + "%@", bundle: french),
+                                              localizedString(kind.rawValue, bundle: french)))
+            }
+        }
     }
 
     @Test func persistedEnumRawValuesStayEnglish() {
@@ -127,25 +166,27 @@ struct LocalizationTests {
     /// English identifiers stored on `DocumentHistory` and shown through `localizedHistoryAction`.
     private static let staticHistoryNames = [
         "Add Hide-All Mask", "Add Mask from Selection", "Add Reveal-All Mask", "Blur", "Brush Stroke",
-        "Canvas Size", "Clear", "Clone Stamp", "Contract Selection", "Copy Layer Mask",
-        "Copy Layers from Project", "Create Clipping Mask", "Crop", "Delete Layer", "Delete Layer Mask",
-        "Delete Layers", "Deselect", "Disable Layer Mask", "Distort", "Distort Layer Mask", "Distort Layers",
-        "Duplicate Layer", "Duplicate Layers", "Duplicate Pixels", "Elliptical Marquee", "Enable Layer Mask",
-        "Erase", "Expand Selection", "Fill", "Fill Mask", "Flip Canvas Horizontal", "Flip Canvas Vertical",
-        "Flip Horizontal", "Flip Vertical", "Gradient", "Gradient Mask", "Group Layers", "Hide Layer",
-        "Hue/Saturation", "Image Size", "Import Image", "Import Images", "Inverse", "Invert", "Invert Mask",
-        "Lasso", "Layer Blend Mode", "Layer Opacity", "Layer via Copy", "Levels", "Link Layer Mask",
-        "Liquify", "Load Layer Selection", "Load Mask Selection", "Magic Wand", "Merge Down", "Merge Group",
-        "Merge Layers", "Move Layer", "Move Pixels", "Move Selection", "New Blank Layer", "New Canvas",
-        "New Folder", "Paint Mask", "Paste", "Polygonal Lasso", "Rectangular Marquee", "Release Clipping Mask",
-        "Rename Layer", "Reorder Layers", "Replace Layer Mask", "Select All", "Show Layer", "Smudge",
-        "Spot Healing", "Transform Layer", "Transform Layer Mask", "Transform Layers", "Transform Selection",
-        "Unlink Layer Mask",
+        "Canvas Size", "Clear", "Clear Guides", "Clone Stamp", "Contract Selection", "Copy Layer Mask",
+        "Copy Layers from Project", "Create Clipping Mask", "Crop", "Delete Guide", "Delete Layer",
+        "Delete Layer Mask", "Delete Layers", "Deselect", "Disable Layer Mask", "Distort", "Distort Layer Mask",
+        "Distort Layers", "Duplicate Layer", "Duplicate Layers", "Duplicate Pixels", "Edit Text",
+        "Elliptical Marquee", "Enable Layer Mask", "Erase", "Expand Selection", "Fill", "Fill Mask",
+        "Fill Text", "Flip Canvas Horizontal", "Flip Canvas Vertical", "Flip Horizontal", "Flip Vertical",
+        "Gradient", "Gradient Mask", "Group Layers", "Hide Layer", "Hue/Saturation", "Image Size",
+        "Import Image", "Import Images", "Inverse", "Invert", "Invert Mask", "Lasso", "Layer Blend Mode",
+        "Layer Effects", "Layer Opacity", "Layer via Copy", "Levels", "Link Layer Mask", "Liquify",
+        "Load Layer Selection", "Load Mask Selection", "Magic Wand", "Merge Down", "Merge Group",
+        "Merge Layers", "Move Guide", "Move Layer", "Move Pixels", "Move Selection", "New Blank Layer",
+        "New Canvas", "New Folder", "New Guide", "New Text Layer", "Paint Mask", "Paste", "Polygonal Lasso",
+        "Rectangular Marquee", "Release Clipping Mask", "Rename Layer", "Reorder Layers", "Replace Layer Mask",
+        "Select All", "Show Layer", "Smudge", "Spot Healing", "Transform Layer", "Transform Layer Mask",
+        "Transform Layers", "Transform Selection", "Unlink Layer Mask",
     ]
 
     /// Names whose French copy must not be a copy of the English source.
     private static let historyNamesThatMustDiffer: Set<String> = [
-        "Duplicate Pixels", "Elliptical Marquee", "Gradient Mask", "Move Pixels",
+        "Clear Guides", "Delete Guide", "Duplicate Pixels", "Edit Text", "Elliptical Marquee", "Fill Text",
+        "Gradient Mask", "Layer Effects", "Move Guide", "Move Pixels", "New Guide", "New Text Layer",
         "Polygonal Lasso", "Rectangular Marquee",
     ]
 }

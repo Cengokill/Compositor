@@ -337,6 +337,22 @@
         }
       }
     },
+    "Add %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter %@"
+          }
+        }
+      }
+    },
     "Add Hide-All Mask": {
       "localizations": {
         "en": {
@@ -993,6 +1009,22 @@
         }
       }
     },
+    "Cancel %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annuler %@"
+          }
+        }
+      }
+    },
     "Canvas": {
       "localizations": {
         "en": {
@@ -1165,6 +1197,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Effacer"
+          }
+        }
+      }
+    },
+    "Clear Guides": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Guides"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacer les guides"
           }
         }
       }
@@ -1857,6 +1905,22 @@
         }
       }
     },
+    "Copy %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copier %@"
+          }
+        }
+      }
+    },
     "Copy Layer Mask": {
       "localizations": {
         "en": {
@@ -2285,6 +2349,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Couleurs par défaut (D)"
+          }
+        }
+      }
+    },
+    "Delete Guide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Guide"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer le guide"
           }
         }
       }
@@ -2945,6 +3025,22 @@
         }
       }
     },
+    "Edit %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier %@"
+          }
+        }
+      }
+    },
     "Edit %@ Adjustment": {
       "localizations": {
         "en": {
@@ -2973,6 +3069,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Modifier le réglage…"
+          }
+        }
+      }
+    },
+    "Edit Text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Text"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifier le texte"
           }
         }
       }
@@ -3325,6 +3437,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Remplir le masque"
+          }
+        }
+      }
+    },
+    "Fill Text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill Text"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplir le texte"
           }
         }
       }
@@ -3969,6 +4097,22 @@
         }
       }
     },
+    "Hide %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Masquer %@"
+          }
+        }
+      }
+    },
     "Hide Compositor": {
       "localizations": {
         "en": {
@@ -4509,6 +4653,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mode de fusion du calque"
+          }
+        }
+      }
+    },
+    "Layer Effects": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Layer Effects"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effets de calque"
           }
         }
       }
@@ -5201,6 +5361,22 @@
         }
       }
     },
+    "Move Guide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Guide"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacer le guide"
+          }
+        }
+      }
+    },
     "Move Layer": {
       "localizations": {
         "en": {
@@ -5453,6 +5629,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nouveau dossier"
+          }
+        }
+      }
+    },
+    "New Guide": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Guide"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau guide"
+          }
+        }
+      }
+    },
+    "New Text Layer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Text Layer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau calque de texte"
           }
         }
       }
@@ -6529,6 +6737,22 @@
         }
       }
     },
+    "Remove %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer %@"
+          }
+        }
+      }
+    },
     "Remove Background": {
       "localizations": {
         "en": {
@@ -7165,6 +7389,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Maj-U bascule entre Rectangle et Ellipse"
+          }
+        }
+      }
+    },
+    "Show %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher %@"
           }
         }
       }
