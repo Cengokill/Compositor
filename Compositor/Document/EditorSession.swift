@@ -282,7 +282,7 @@ final class EditorSession {
     /// Pixels the Expand / Contract buttons grow or shrink the selection by.
     var selectionExpandAmount = 1
     var selectionContractAmount = 1
-    @ObservationIgnored var pendingOpacityDigit: (digit: Int, time: TimeInterval)?
+    @ObservationIgnored var pendingOpacityDigit: (digit: Int, time: TimeInterval, flow: Bool)?
     var colorPicker: ColorPickerState?
     var brushError: String?
     var brushRevision = 0

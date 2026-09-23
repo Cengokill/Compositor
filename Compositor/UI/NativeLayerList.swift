@@ -693,7 +693,7 @@ final class LayerTableView: NSTableView {
             else if key == "w" { if !event.isARepeat { session?.pressWandKey() } }
             else { session?.selectTool(key == "a" ? .idle : key == "i" ? .eyedropper : key == "c" ? .crop : key == "r" ? .blur : key == "b" ? .brush : key == "g" ? .gradient : key == "l" ? .lasso : key == "m" ? .marquee : key == "j" ? .spotHealing : key == "s" ? .cloneStamp : key == "u" ? .shape : key == "v" ? .move : key == "h" ? .hand : .zoom) }
         } else if plain, let digit = Int(event.charactersIgnoringModifiers ?? ""), session?.usesOpacityKeys == true {
-            session?.typeOpacityDigit(digit)
+            session?.typeOpacityDigit(digit, flow: event.modifierFlags.contains(.shift))
         // With the Move tool the arrows move the layer, as on the canvas, rather than changing the row selection.
         } else if plain, session?.transformEdit != nil || session?.tool == .move, [123, 124, 125, 126].contains(event.keyCode) {
             let step: CGFloat = event.modifierFlags.contains(.shift) ? 10 : 1

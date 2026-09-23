@@ -1849,7 +1849,7 @@ final class CanvasView: NSView {
             // L chooses the Lasso the same way; Freehand/Polygonal is switched in the tool bar.
             case "l": if !event.isARepeat { session.pressLassoKey(); refreshLassoCursor() }
             case let key? where Int(key) != nil && session.usesOpacityKeys:
-                session.typeOpacityDigit(Int(key) ?? 0)
+                session.typeOpacityDigit(Int(key) ?? 0, flow: event.modifierFlags.contains(.shift))
             case "[" where session.tool.isBrushTool: session.changeBrushSize(increase: false)
             case "]" where session.tool.isBrushTool: session.changeBrushSize(increase: true)
             // Shift turns [ and ] into { and }.

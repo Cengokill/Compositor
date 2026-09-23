@@ -4,12 +4,12 @@ import Testing
 
 @MainActor
 struct BrushIntersectionTests {
-    private func stroke(diameter: CGFloat = 120, opacity: CGFloat = 1, useGPU: Bool = true) throws -> BrushStroke {
+    private func stroke(diameter: CGFloat = 120, opacity: CGFloat = 1, flow: CGFloat = 1, useGPU: Bool = true) throws -> BrushStroke {
         let session = EditorSession()
         session.createDocument(width: 800, height: 800)
         session.addBlankLayer()
         return try BrushStroke(layer: #require(session.activeLayer), mask: false,
-            settings: BrushSettings(diameter: diameter, hardness: 0, red: 1, green: 1, blue: 1, opacity: opacity),
+            settings: BrushSettings(diameter: diameter, hardness: 0, red: 1, green: 1, blue: 1, opacity: opacity, flow: flow),
             canvas: CGSize(width: 800, height: 800), useGPU: useGPU)
     }
     private func trace(_ stroke: BrushStroke, _ points: [CGPoint], step: CGFloat = 12) throws {
@@ -78,6 +78,22 @@ struct BrushIntersectionTests {
         try paint.flush()
         let second = try raster(paint)
         #expect(memcmp(first.data!, second.data!, first.bytesPerRow * first.height) == 0)
+    }
+
+    @Test func flowScalesSoftDepositionOnGPUAndCPU() throws {
+        for useGPU in [true, false] {
+            let full = try stroke(useGPU: useGPU), half = try stroke(flow: 0.5, useGPU: useGPU)
+            try full.append(CGPoint(x: 400, y: 400))
+            try half.append(CGPoint(x: 400, y: 400))
+            try full.flush()
+            try half.flush()
+            let solid = alpha(try raster(full), 400, 400)
+            let dab = alpha(try raster(half), 400, 400)
+            #expect(abs(dab - solid / 2) <= 2, "useGPU \(useGPU)")
+            let pass = try stroke(flow: 0.5, useGPU: useGPU)
+            try trace(pass, [CGPoint(x: 100, y: 400), CGPoint(x: 700, y: 400), CGPoint(x: 100, y: 400)])
+            #expect(alpha(try raster(pass), 400, 400) > dab + 30, "useGPU \(useGPU)")
+        }
     }
 
     @Test func exportCrossingExample() async throws {

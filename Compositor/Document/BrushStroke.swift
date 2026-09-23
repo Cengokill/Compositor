@@ -14,6 +14,9 @@ nonisolated struct BrushSettings: Sendable {
     var blue: CGFloat = 0
     /// Caps the whole stroke, as in Photoshop: overlapping dabs never exceed it.
     var opacity: CGFloat = 1
+    /// How much of the tip each dab deposits. Dabs in one stroke build toward full coverage,
+    /// which opacity then caps. 1 leaves the stroke identical to a brush without flow.
+    var flow: CGFloat = 1
     /// 0–100. The brush trails the pointer on a string of this length, so a shaky hand
     /// draws a smooth line; 0 follows the pointer exactly.
     var smoothing: CGFloat = 0
@@ -135,9 +138,10 @@ final class BrushStroke {
     private let gpu: MetalBrushCoverage?
     private var gpuTiles: [Int: MetalBrushCoverage.Tile] = [:]
     private var gpuTailKeys = Set<Int>()
-    /// Per-tile grayscale coverage. Soft tips accumulate paint within the stroke;
-    /// hard tips keep their antialiased silhouette. Each tile is recomposed as original
-    /// + color × coverage × opacity, preserving the stroke-wide opacity cap.
+    /// Per-tile grayscale coverage. Soft tips, and hard tips below full flow, accumulate
+    /// paint within the stroke. Hard tips at full flow keep their antialiased silhouette.
+    /// Each tile is recomposed as original + color × coverage × opacity, so opacity still
+    /// caps the stroke after flow has scaled each dab.
     private var coverage: [Int: CGContext] = [:]
     /// Tile edge in layer pixels. Wider tiles were measured to be no faster for wide
     /// brushes and slower for narrow ones.
@@ -174,7 +178,8 @@ final class BrushStroke {
               (1...30_000).contains(originalWidth), (1...30_000).contains(originalHeight),
               settings.diameter.isFinite, (1...2000).contains(settings.diameter),
               settings.hardness.isFinite, (0...1).contains(settings.hardness),
-              settings.opacity.isFinite, (0.01...1).contains(settings.opacity) else { throw ProjectError.tooLarge }
+              settings.opacity.isFinite, (0.01...1).contains(settings.opacity),
+              settings.flow.isFinite, (0.01...1).contains(settings.flow) else { throw ProjectError.tooLarge }
         let space = mask ? CGColorSpaceCreateDeviceGray() : CGColorSpace(name: CGColorSpace.sRGB)!
         let components: [CGFloat] = mask ? [settings.red, 1] : [settings.red, settings.green, settings.blue, 1]
         paintColor = CGColor(colorSpace: space, components: components)!
@@ -495,6 +500,17 @@ final class BrushStroke {
         }
     }
 
+    /// Full flow keeps a hard tip's silhouette (`lighten`). Below that, screen-blend the
+    /// full tip at `flow` alpha: that is source-over of `flow × tip`, so dabs build up.
+    private func beginDab(_ context: CGContext) {
+        if settings.flow < 1 {
+            context.setBlendMode(.screen)
+            context.setAlpha(settings.flow)
+        } else {
+            context.setBlendMode(settings.hardness >= 1 ? .lighten : .screen)
+        }
+    }
+
     private static let eraseColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
     private static let healingWash = CGColor(srgbRed: 0.12, green: 0.12, blue: 0.12, alpha: 1)
 
@@ -536,7 +552,7 @@ final class BrushStroke {
                 context.saveGState()
                 if let gridTip, let blit {
                     context.clip(to: pixelCanvas.offsetBy(dx: -tile.rect.minX, dy: -tile.rect.minY))
-                    context.setBlendMode(settings.hardness >= 1 ? .lighten : .screen)
+                    beginDab(context)
                     context.interpolationQuality = .none
                     context.draw(gridTip, in: blit.offsetBy(dx: -tile.rect.minX, dy: -tile.rect.minY))
                     context.restoreGState()
@@ -546,7 +562,7 @@ final class BrushStroke {
                 context.translateBy(x: -tile.rect.minX, y: -tile.rect.minY)
                 context.concatenate(inverse)
                 context.clip(to: canvas)
-                context.setBlendMode(settings.hardness >= 1 ? .lighten : .screen)
+                beginDab(context)
                 if let stamp {
                     // Stamp the pre-rendered tip: drawing the falloff procedurally for every
                     // dab (a 60 px brush lays ~14 per mouse move) is what made strokes stutter.

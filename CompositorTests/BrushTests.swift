@@ -317,6 +317,84 @@ struct BrushTests {
         #expect(try pixel(result, x: 100, y: 40) == preview)
         #expect(try pixel(result, x: 100, y: 0)[3] == 0)
     }
+    @Test func flowScalesOneDabAndBuildsWhereTheStrokeOverlaps() throws {
+        let session = makeSession(width: 200, height: 80)
+        session.brushSettings.flow = 0.5
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        let click = try pixel(try preview(try #require(session.brushStroke), canvas: session.document!.size), x: 40, y: 40)
+        #expect(abs(click[3] - 128) <= 1 && abs(click[0] - 128) <= 1)
+        session.cancelBrush()
+        session.beginBrush(at: CGPoint(x: 20, y: 40))
+        session.continueBrush(at: CGPoint(x: 180, y: 40))
+        let built = try pixel(try preview(try #require(session.brushStroke), canvas: session.document!.size), x: 100, y: 40)[3]
+        #expect(built > click[3] + 40 && built <= 255)
+        session.cancelBrush()
+    }
+    @Test func flowStaysUnderTheStrokeOpacityCap() throws {
+        let session = makeSession(width: 200, height: 80)
+        session.brushSettings.flow = 0.5
+        session.brushSettings.opacity = 0.5
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        let click = try pixel(try preview(try #require(session.brushStroke), canvas: session.document!.size), x: 40, y: 40)[3]
+        #expect(abs(click - 64) <= 1)
+        session.cancelBrush()
+        session.beginBrush(at: CGPoint(x: 20, y: 40))
+        for x in [180, 20, 180, 20, 100] { session.continueBrush(at: CGPoint(x: CGFloat(x), y: 40)) }
+        let built = try pixel(try preview(try #require(session.brushStroke), canvas: session.document!.size), x: 100, y: 40)[3]
+        #expect(abs(built - 128) <= 1)
+        session.cancelBrush()
+    }
+    @Test func flowAppliesToErasing() async throws {
+        let session = makeSession(width: 80, height: 80)
+        session.brushSettings.diameter = 200
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        await session.finishBrush()
+        session.brushMode = .erase
+        session.brushSettings.diameter = 30
+        session.brushSettings.flow = 0.5
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        let live = try pixel(try preview(try #require(session.brushStroke), canvas: session.document!.size), x: 40, y: 40)
+        #expect(abs(live[3] - 128) <= 1)
+        await session.finishBrush()
+        let result = try await render(session)
+        #expect(try pixel(result, x: 40, y: 40) == live)
+        #expect(try pixel(result, x: 5, y: 5)[3] == 255)
+    }
+    @Test func flowAppliesToMaskPainting() async throws {
+        let session = makeSession(width: 80, height: 80)
+        session.brushSettings.diameter = 200
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        await session.finishBrush()
+        session.addLayerMask(revealing: true)
+        session.selectLayerTarget(try #require(session.activeLayerID), mask: true)
+        session.brushSettings.diameter = 20
+        session.brushSettings.flow = 0.5
+        session.maskPaintWhite = false
+        session.beginBrush(at: CGPoint(x: 40, y: 40))
+        await session.finishBrush()
+        let result = try await render(session)
+        #expect(abs(try pixel(result, x: 40, y: 40)[3] - 128) <= 1)
+        #expect(try pixel(result, x: 5, y: 5)[3] == 255)
+    }
+    @Test func shiftDigitsSetBrushFlowOnly() throws {
+        let session = makeSession()
+        #expect(BrushSettings().flow == 1)
+        session.typeOpacityDigit(5, at: 10, flow: true)
+        #expect(session.brushSettings.flow == 0.5 && session.brushSettings.opacity == 1)
+        session.typeOpacityDigit(2, at: 10.2, flow: true)
+        #expect(session.brushSettings.flow == 0.52)
+        session.brushSettings.flow = 0.3
+        session.selectTool(.spotHealing)
+        session.beginBrush(at: CGPoint(x: 30, y: 40))
+        #expect(session.brushStroke?.settings.flow == 1)
+        session.cancelBrush()
+        session.typeOpacityDigit(4, at: 20, flow: true)
+        #expect(session.brushSettings.flow == 0.3 && session.brushSettings.opacity == 0.4)
+        session.selectTool(.brush)
+        session.beginBrush(at: CGPoint(x: 30, y: 40))
+        #expect(session.brushStroke?.settings.flow == 0.3)
+        session.cancelBrush()
+    }
     @Test func softStrokeBuildsCoverageWhileKeepingItsFeatheredRim() throws {
         let session = makeSession(width: 200, height: 80)
         session.brushSettings.diameter = 40

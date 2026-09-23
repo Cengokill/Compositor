@@ -47,6 +47,7 @@ extension EditorSession {
         finishOpacityEdit()
         do {
             var settings = brushSettings
+            if tool != .brush { settings.flow = 1 }
             settings.healing = tool == .spotHealing
             settings.erasing = tool == .brush && brushMode == .erase && !isMaskSelected
             settings.healingMode = spotHealingMode
@@ -192,16 +193,22 @@ extension EditorSession {
 
     /// Photoshop-style opacity keys: 1 = 10% … 9 = 90%, 0 = 100%.
     /// Two digits typed quickly set an exact value (4 then 5 = 45%, 0 then 5 = 5%).
-    func typeOpacityDigit(_ digit: Int, at time: TimeInterval = ProcessInfo.processInfo.systemUptime) {
+    /// Shift does the same for brush flow, and only while the Brush or Eraser is current.
+    func typeOpacityDigit(_ digit: Int, at time: TimeInterval = ProcessInfo.processInfo.systemUptime, flow: Bool = false) {
         guard usesOpacityKeys, brushStroke == nil, !isProjectBusy, (0...9).contains(digit) else { return }
+        let adjustFlow = flow && tool == .brush
         var percent = digit == 0 ? 100 : digit * 10
-        if let pending = pendingOpacityDigit, time - pending.time < 0.6 {
+        if let pending = pendingOpacityDigit, pending.flow == adjustFlow, time - pending.time < 0.6 {
             percent = max(1, pending.digit * 10 + digit)
             pendingOpacityDigit = nil
         } else {
-            pendingOpacityDigit = (digit, time)
+            pendingOpacityDigit = (digit, time, adjustFlow)
         }
         let value = CGFloat(percent) / 100
+        if adjustFlow {
+            brushSettings.flow = value
+            return
+        }
         switch tool {
         case .brush, .spotHealing, .cloneStamp, .blur: brushSettings.opacity = value
         case .gradient: gradientSettings.opacity = value

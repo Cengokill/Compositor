@@ -69,6 +69,16 @@ struct BrushControls: View {
                 .unitSuffix("%")
             // Paint and Erase only: healing, cloning and smearing have their own feel.
             if session.tool == .brush {
+                Text("Flow")
+                Slider(value: $session.brushSettings.flow, in: 0.01...1).frame(width: 100)
+                TextField("Flow", value: Binding<Double>(get: { Double(session.brushSettings.flow * 100) },
+                    set: { session.brushSettings.flow = $0.isFinite ? CGFloat(min(100, max(1, $0)) / 100) : 1 }),
+                    format: .number.precision(.fractionLength(0)))
+                    .frame(width: 42).textFieldStyle(.roundedBorder)
+                    .arrowSteps(value: { Double(session.brushSettings.flow * 100) },
+                                change: { session.brushSettings.flow = CGFloat(min(100, max(1, $0)) / 100) })
+                    .help("How fast each dab lays color down. Shift+1–9 for 10–90%, Shift+0 for 100%")
+                    .unitSuffix("%")
                 Text("Smoothing")
                 Slider(value: $session.brushSettings.smoothing, in: 0...100).frame(width: 100)
                 TextField("Smoothing", value: Binding<Double>(get: { Double(session.brushSettings.smoothing) },

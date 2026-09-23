@@ -17,6 +17,7 @@ final class MetalBrushCoverage {
         var geometry: SIMD4<Float>
         var canvas: SIMD4<Float>
         var counts: SIMD4<UInt32>
+        var flow: SIMD4<Float>
     }
     private init() throws {
         guard let device = MTLCreateSystemDefaultDevice(), let queue = device.makeCommandQueue(),
@@ -48,7 +49,8 @@ final class MetalBrushCoverage {
                 mapping: SIMD4(Float(mapping.a), Float(mapping.b), Float(mapping.c), Float(mapping.d)),
                 geometry: SIMD4(Float(origin.x), Float(origin.y), Float(settings.diameter / 2), Float(settings.hardness)),
                 canvas: SIMD4(Float(canvas.width), Float(canvas.height), Float(max(0.001, min(hypot(mapping.a, mapping.b), hypot(mapping.c, mapping.d)))), Float(max(0.25, settings.diameter * BrushStroke.spacingFraction(settings.hardness)))),
-                counts: SIMD4(UInt32(rect.width), UInt32(rect.height), UInt32(settled.count), UInt32(segments.count)))
+                counts: SIMD4(UInt32(rect.width), UInt32(rect.height), UInt32(settled.count), UInt32(segments.count)),
+                flow: SIMD4(Float(settings.flow), 0, 0, 0))
             encoder.setBuffer(tile.permanent, offset: 0, index: 0)
             encoder.setBuffer(tile.preview, offset: 0, index: 1)
             encoder.setBytes(&uniforms, length: MemoryLayout<Uniforms>.stride, index: 2)
@@ -76,6 +78,7 @@ struct BrushUniforms {
     float4 geometry; // document origin of tile, radius, hardness
     float4 canvas; // width, height, antialias width, deposition spacing
     uint4 counts; // tile width, height, committed segment count, total segment count
+    float4 flow; // x = dab strength
 };
 
 float segmentDistanceSquared(float2 p, float4 segment) {
@@ -97,9 +100,11 @@ float brushCoverage(float distanceSquared, constant BrushUniforms &u) {
 
 // Integrate paint deposition by distance travelled, not pointer-event count or
 // spline subdivision count. Optical density adds; coverage is 1 - exp(-density).
-// This is the continuous form of source-over soft dabs at the shared deposition spacing.
+// Flow scales the dab first. At 1 this is source-over of the full tip; below that,
+// dabs of (flow × tip) build up. Hard tips at full flow skip this and keep a silhouette.
 float tipDensity(float distanceSquared, constant BrushUniforms &u) {
-    return -log(max(1.0f - brushCoverage(distanceSquared, u), 0.001f));
+    float coverage = brushCoverage(distanceSquared, u);
+    return -log(max(1.0f - u.flow.x * coverage, 0.001f));
 }
 
 float segmentDensity(float2 p, float4 segment, constant BrushUniforms &u) {
@@ -142,7 +147,7 @@ kernel void continuousBrush(device float *permanent [[buffer(0)]],
     float2 local = float2(pixel) + 0.5f;
     float2 p = u.geometry.xy + local.x * u.mapping.xy + local.y * u.mapping.zw;
     if (any(p < 0.0f) || any(p >= u.canvas.xy)) { preview[index] = 0; return; }
-    if (u.geometry.w >= 1.0f) {
+    if (u.geometry.w >= 1.0f && u.flow.x >= 1.0f) {
         // Hard tips already have a solid interior. Preserve pixel-edge antialiasing.
         float settled = INFINITY, tail = INFINITY;
         for (uint i = 0; i < u.counts.z; ++i) settled = min(settled, segmentDistanceSquared(p, segments[i]));
