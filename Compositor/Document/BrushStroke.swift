@@ -7,21 +7,39 @@ nonisolated enum SpotHealingMode: String, CaseIterable, Sendable, Hashable {
 }
 
 nonisolated struct BrushSettings: Sendable {
-    var diameter: CGFloat = 40
-    var hardness: CGFloat = 1
-    var red: CGFloat = 0
-    var green: CGFloat = 0
-    var blue: CGFloat = 0
+    var diameter: CGFloat
+    var hardness: CGFloat
+    var red: CGFloat
+    var green: CGFloat
+    var blue: CGFloat
     /// Caps the whole stroke, as in Photoshop: overlapping dabs never exceed it.
-    var opacity: CGFloat = 1
+    var opacity: CGFloat
     /// 0–100. The brush trails the pointer on a string of this length, so a shaky hand
     /// draws a smooth line; 0 follows the pointer exactly.
-    var smoothing: CGFloat = 0
+    var smoothing: CGFloat
     /// Spot-healing uses nearby source pixels instead of the foreground color.
     /// Erase: the stroke clears the layer's pixels instead of painting color on them.
-    var erasing = false
-    var healing = false
-    var healingMode: SpotHealingMode = .contentAware
+    var erasing: Bool
+    var healing: Bool
+    var healingMode: SpotHealingMode
+    /// Combines this stroke's new paint with the layer. It does not change the layer's own blend mode.
+    var blendMode: BrushBlendMode
+
+    init(diameter: CGFloat = 40, hardness: CGFloat = 1, red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0,
+         opacity: CGFloat = 1, smoothing: CGFloat = 0, erasing: Bool = false, healing: Bool = false,
+         healingMode: SpotHealingMode = .contentAware, blendMode: BrushBlendMode = .layer(.normal)) {
+        self.diameter = diameter
+        self.hardness = hardness
+        self.red = red
+        self.green = green
+        self.blue = blue
+        self.opacity = opacity
+        self.smoothing = smoothing
+        self.erasing = erasing
+        self.healing = healing
+        self.healingMode = healingMode
+        self.blendMode = blendMode
+    }
 }
 
 nonisolated struct BrushPatch: @unchecked Sendable {
@@ -136,8 +154,8 @@ final class BrushStroke {
     private var gpuTiles: [Int: MetalBrushCoverage.Tile] = [:]
     private var gpuTailKeys = Set<Int>()
     /// Per-tile grayscale coverage. Soft tips accumulate paint within the stroke;
-    /// hard tips keep their antialiased silhouette. Each tile is recomposed as original
-    /// + color × coverage × opacity, preserving the stroke-wide opacity cap.
+    /// hard tips keep their antialiased silhouette. Each tile is recomposed as the original
+    /// pixels plus the brush color through coverage × opacity, in the stroke's blend mode.
     private var coverage: [Int: CGContext] = [:]
     /// Tile edge in layer pixels. Wider tiles were measured to be no faster for wide
     /// brushes and slower for narrow ones.
@@ -482,8 +500,10 @@ final class BrushStroke {
                     tile.context.setBlendMode(.destinationOut)
                     BrushRaster.fill(Self.eraseColor, coverage: mask, in: local, alpha: settings.opacity, context: tile.context)
                     tile.context.restoreGState()
-                } else {
+                } else if isMask || settings.blendMode == .layer(.normal) {
                     BrushRaster.fill(paintColor, coverage: mask, in: local, alpha: settings.opacity, context: tile.context)
+                } else {
+                    try paintBlended(coverageContext: coverage, mask: mask, in: tile.context, local: local, dirty: dirty)
                 }
                 tile.context.restoreGState()
             }
@@ -497,6 +517,80 @@ final class BrushStroke {
 
     private static let eraseColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 1)
     private static let healingWash = CGColor(srgbRed: 0.12, green: 0.12, blue: 0.12, alpha: 1)
+
+    /// Layer modes go through the same Core Graphics / Core Image split as layer compositing.
+    /// Replace and Negation are brush-only and run after the original pixels are restored.
+    private func paintBlended(coverageContext: CGContext, mask: CGImage, in context: CGContext, local: CGRect, dirty: CGRect) throws {
+        switch settings.blendMode {
+        case .layer(.normal):
+            BrushRaster.fill(paintColor, coverage: mask, in: local, alpha: settings.opacity, context: context)
+        case .layer(let mode):
+            if SeparableBlend.needsSurface(mode), SeparableBlend.draw(mode, in: context, body: { surface in
+                BrushRaster.fill(paintColor, coverage: mask, in: local, alpha: settings.opacity, context: surface)
+            }) { break }
+            context.saveGState()
+            context.setBlendMode(mode.cgMode)
+            BrushRaster.fill(paintColor, coverage: mask, in: local, alpha: settings.opacity, context: context)
+            context.restoreGState()
+        case .replace:
+            // Copy writes the brush color and its alpha, instead of mixing RGB with the destination.
+            context.saveGState()
+            context.setBlendMode(.copy)
+            BrushRaster.fill(paintColor, coverage: mask, in: local, alpha: settings.opacity, context: context)
+            context.restoreGState()
+        case .negation:
+            try paintNegation(coverageContext: coverageContext, in: context, local: local, dirty: dirty)
+        }
+    }
+
+    /// `1 - abs(1 - base - brush)` per straight channel, then source-over by coverage × opacity.
+    /// A transparent base is black, so a fully covered empty pixel becomes the brush color.
+    private func paintNegation(coverageContext: CGContext, in context: CGContext, local: CGRect, dirty: CGRect) throws {
+        let width = context.width, height = context.height
+        guard width > 0, height > 0, coverageContext.width == width, coverageContext.height == height,
+              let base = context.makeImage() else { throw ExportError.render }
+        let work = try BrushRaster.context(width: width, height: height, mask: false)
+        BrushRaster.draw(base, in: CGRect(x: 0, y: 0, width: width, height: height), mask: false, context: work)
+        guard let color = work.data?.assumingMemoryBound(to: UInt8.self),
+              let gray = coverageContext.data?.assumingMemoryBound(to: UInt8.self) else { throw ExportError.render }
+        let bounds = dirty.integral.intersection(CGRect(x: 0, y: 0, width: width, height: height))
+        let x0 = Int(bounds.minX), x1 = Int(bounds.maxX), y0 = Int(bounds.minY), y1 = Int(bounds.maxY)
+        let brush = (r: Float(settings.red), g: Float(settings.green), b: Float(settings.blue))
+        let opacity = Float(settings.opacity)
+        let colorStride = work.bytesPerRow, grayStride = coverageContext.bytesPerRow
+        for y in y0..<y1 {
+            let row = color.advanced(by: y * colorStride)
+            let cover = gray.advanced(by: y * grayStride)
+            for x in x0..<x1 {
+                let t = Float(cover[x]) / 255 * opacity
+                if t <= 0 { continue }
+                let pixel = row.advanced(by: x * 4)
+                let baseA = Float(pixel[3]) / 255
+                let baseR = baseA > 0 ? Float(pixel[0]) / 255 / baseA : 0
+                let baseG = baseA > 0 ? Float(pixel[1]) / 255 / baseA : 0
+                let baseB = baseA > 0 ? Float(pixel[2]) / 255 / baseA : 0
+                func channel(_ base: Float, _ paint: Float) -> Float {
+                    let negated = 1 - abs(1 - base - paint)
+                    return base * (1 - t) + negated * t
+                }
+                let outA = baseA * (1 - t) + t
+                let outR = channel(min(1, max(0, baseR)), brush.r)
+                let outG = channel(min(1, max(0, baseG)), brush.g)
+                let outB = channel(min(1, max(0, baseB)), brush.b)
+                pixel[0] = Self.unitByte(outR * outA)
+                pixel[1] = Self.unitByte(outG * outA)
+                pixel[2] = Self.unitByte(outB * outA)
+                pixel[3] = Self.unitByte(outA)
+            }
+        }
+        guard let result = work.makeImage() else { throw ExportError.render }
+        // The tile clip (dirty rect and any selection) limits which of these pixels land.
+        BrushRaster.draw(result, in: local, mask: false, context: context)
+    }
+
+    private static func unitByte(_ value: Float) -> UInt8 {
+        UInt8((min(1, max(0, value)) * 255).rounded())
+    }
 
     private func dab(_ point: CGPoint, changed: inout Set<Int>) throws {
         let radius = settings.diameter / 2

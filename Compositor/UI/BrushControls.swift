@@ -37,6 +37,10 @@ struct BrushControls: View {
                 .pickerStyle(.segmented).labelsHidden().fixedSize()
                 .help("Copy from the active layer only, or from every visible layer as shown")
             }
+            if session.tool == .brush, session.brushMode == .paint, !session.isMaskSelected {
+                Text("Mode")
+                BrushBlendModePicker(session: session).frame(width: 180)
+            }
             Text("Size")
             TextField("Size", value: Binding<Double>(get: { Double(session.brushSettings.diameter) },
                 set: { session.brushSettings.diameter = $0.isFinite ? CGFloat(min(2000, max(1, $0))) : 40 }),
