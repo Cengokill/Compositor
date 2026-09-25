@@ -9,12 +9,34 @@ final class CanvasTextView: NSTextView {
     private let textUndo = UndoManager()
     override var undoManager: UndoManager? { textUndo }
     override func resignFirstResponder() -> Bool {
-        // A menu or the color picker takes the focus and AppKit then paints the selection solid gray, which covers
-        // the letters the canvas draws underneath. Remember the letters first; the layout manager keeps the wash.
+        // A menu or the color picker takes the focus. Remember which letters were selected; draw(_:) keeps the
+        // wash translucent, because AppKit would otherwise fill the inactive selection with opaque gray.
         let range = selectedRange()
         let resigned = super.resignFirstResponder()
         if range.length > 0 { editor?.keepSelection(range) }
+        needsDisplay = true
         return resigned
+    }
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        // Glyphs are clear: the canvas shows through. An opaque inactive selection would hide them, so once this
+        // view is no longer first responder the system's fill is cleared and the same translucent wash is put back.
+        guard selectedRange().length > 0, window?.firstResponder !== self,
+              let layout = layoutManager, let container = textContainer else { return }
+        let glyphs = layout.glyphRange(forCharacterRange: selectedRange(), actualCharacterRange: nil)
+        guard glyphs.length > 0, let context = NSGraphicsContext.current?.cgContext else { return }
+        let origin = textContainerOrigin
+        var rects: [NSRect] = []
+        layout.enumerateEnclosingRects(forGlyphRange: glyphs, withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0), in: container) { rect, _ in
+            rects.append(rect.offsetBy(dx: origin.x, dy: origin.y))
+        }
+        context.saveGState()
+        context.setBlendMode(.copy)
+        context.setFillColor(NSColor.clear.cgColor)
+        rects.forEach { context.fill($0) }
+        context.restoreGState()
+        NSColor.selectedTextBackgroundColor.withAlphaComponent(0.45).setFill()
+        rects.forEach { $0.fill() }
     }
     override func keyDown(with event: NSEvent) {
         guard let event = ShortcutSettings.shared.textEvent(event) else { return }
@@ -58,7 +80,17 @@ private final class CanvasTextLayoutManager: NSLayoutManager {
 
 final class InlineTextEditor: NSView, NSTextViewDelegate {
     weak var canvas: CanvasView?
-    let textView = CanvasTextView(frame: .zero)
+    let textView: CanvasTextView = {
+        // TextKit 2 draws the inactive selection itself and ignores a custom layout manager, so the view is built
+        // on TextKit 1, where the selection wash can stay translucent.
+        let container = NSTextContainer(size: .zero)
+        container.lineFragmentPadding = 0
+        let layout = CanvasTextLayoutManager()
+        let storage = NSTextStorage()
+        storage.addLayoutManager(layout)
+        layout.addTextContainer(container)
+        return CanvasTextView(frame: .zero, textContainer: container)
+    }()
     fileprivate var draftID: UUID?
     private var shownStyle: LayerTextStyle?
     /// The style after an edit NSTextView has accepted but not yet made, with its color runs moved to fit.
@@ -98,7 +130,6 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
         textView.textContainer?.heightTracksTextView = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.isAutomaticDashSubstitutionEnabled = false
-        textView.textContainer?.replaceLayoutManager(CanvasTextLayoutManager())
         // The selection shows through to the text the canvas draws beneath it.
         textView.selectedTextAttributes = [.backgroundColor: NSColor.selectedTextBackgroundColor.withAlphaComponent(0.45)]
         textView.setAccessibilityLabel("Canvas text")
@@ -107,6 +138,7 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
         // mirroring hangs off that placement, the move is visible as a jump.
         wantsLayer = true
         textView.wantsLayer = true
+        textView.layer?.isOpaque = false
         textView.layer?.anchorPoint = .zero
         addSubview(textView)
         clipsToBounds = false

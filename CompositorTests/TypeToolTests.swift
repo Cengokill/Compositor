@@ -290,6 +290,8 @@ struct TypeToolTests {
         NSCursor.setHiddenUntilMouseMoves(true)
         editor.pointerMoved(try move(to: NSPoint(x: -10, y: -10)))
         #expect(NSCursor.current === NSCursor.arrow, "off the canvas, the arrow")
+        #expect(editor.textView.textLayoutManager == nil)
+        #expect(String(describing: type(of: editor.textView.layoutManager!)).contains("CanvasTextLayoutManager"))
     }
 
     @Test func invalidAndStaleDraftsDoNotChangeDocument() throws {
