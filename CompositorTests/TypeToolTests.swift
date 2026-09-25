@@ -415,7 +415,7 @@ struct TypeToolTests {
         #expect(pixels.red > 50 && pixels.dark > 50)
 
         let snapshot = try #require(session.projectSnapshot())
-        #expect(snapshot.manifest.version == 10)
+        #expect(snapshot.manifest.version == 11)
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("TextColors-\(UUID()).comp")
         defer { try? FileManager.default.removeItem(at: url) }
         try await ProjectStore.shared.save(snapshot, to: url)
@@ -435,6 +435,33 @@ struct TypeToolTests {
 
         session.undo()
         #expect(session.activeLayer?.liveText == nil)
+
+        legacy.version = 10
+        let textIndex = try #require(legacy.layers.firstIndex { $0.text != nil })
+        legacy.layers[textIndex].text?.fontRuns = [LayerTextFontRun(location: 0, length: 1, fontName: "Courier")]
+        try JSONEncoder().encode(legacy).write(to: url.appendingPathComponent("manifest.json"))
+        do {
+            _ = try await ProjectStore.shared.load(from: url)
+            Issue.record("Version 10 with font runs should be rejected")
+        } catch ProjectError.invalid {}
+    }
+
+    @Test func fontAppliesToTheSelectionOnly() {
+        var style = LayerTextStyle()
+        style.content = "Hello"
+        style.fontName = "Helvetica"
+        style.setFont("Courier", in: NSRange(location: 0, length: 2))
+        #expect(style.fontName == "Helvetica")
+        #expect(style.fontRuns == [LayerTextFontRun(location: 0, length: 2, fontName: "Courier")])
+        #expect(style.fontName(at: 0) == "Courier" && style.fontName(at: 2) == "Helvetica")
+        let mixed = EditorSession.textBoxSize(style)
+        style.setFont("Courier", in: NSRange(location: 0, length: 0))
+        #expect(style.fontRuns == nil && style.fontName == "Courier")
+        #expect(EditorSession.textBoxSize(style).width > mixed.width)
+        style.setFont("Helvetica", in: NSRange(location: 1, length: 3))
+        style.replaceCharacters(in: NSRange(location: 5, length: 0), withLength: 1)
+        style.content += "!"
+        #expect(style.isValid && style.fontName(at: 5) == "Courier")
     }
 
     @Test func cancelingPickerRestoresSelectionColors() throws {

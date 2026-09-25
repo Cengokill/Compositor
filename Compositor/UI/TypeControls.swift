@@ -18,7 +18,14 @@ struct TypeControls: View {
             Text("Type").font(ToolHeaderStyle.titleFont)
             ScrollView(.horizontal) {
                 HStack(spacing: 10) {
-                    TypeFontPicker(fontName: value(\.fontName))
+                    TypeFontPicker(fontName: Binding(get: {
+                        guard let draft = session.textDraft else { return session.currentTextStyle.fontName }
+                        let selection = draft.selection
+                        return draft.style.fontName(at: selection.length > 0 ? selection.location : max(0, selection.location - 1))
+                    }, set: { name in
+                        let selection = session.textDraft?.selection ?? NSRange()
+                        session.changeTextStyle { $0.setFont(name, in: selection) }
+                    }))
                         .frame(width: 210).help("Font face, including bold and italic variants")
                     TextField("Size", value: number(\.fontSize), format: .number).frame(width: 52)
                         .unitSuffix("px", scrubValue: value(\.fontSize), sensitivity: 1, range: 1...2000, step: 1)
