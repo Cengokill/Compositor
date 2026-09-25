@@ -86,6 +86,23 @@ nonisolated struct LayerTextStyle: Codable, Equatable, Sendable {
         fontRuns?.first { $0.location <= index && index < $0.location + $0.length }?.fontName ?? fontName
     }
 
+    /// The one face covering `range`, or nil when that range is empty or uses more than one.
+    func uniformFontName(in range: NSRange) -> String? {
+        let count = content.utf16.count
+        let start = max(0, min(range.location, count))
+        let end = max(start, min(range.location + range.length, count))
+        guard end > start else { return nil }
+        let face = fontName(at: start)
+        var index = start
+        for run in fontRuns ?? [] where run.location < end && run.location + run.length > index {
+            if run.location > index, fontName != face { return nil }
+            if run.fontName != face { return nil }
+            index = min(end, max(index, run.location + run.length))
+        }
+        if index < end, fontName != face { return nil }
+        return face
+    }
+
     /// Sets the face of `range`. An empty range, or one covering the whole text, changes all of it.
     mutating func setFont(_ name: String, in range: NSRange) {
         guard !name.isEmpty, name.count <= 200, !name.contains(where: \.isNewline) else { return }

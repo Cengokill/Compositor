@@ -454,6 +454,11 @@ struct TypeToolTests {
         #expect(style.fontName == "Helvetica")
         #expect(style.fontRuns == [LayerTextFontRun(location: 0, length: 2, fontName: "Courier")])
         #expect(style.fontName(at: 0) == "Courier" && style.fontName(at: 2) == "Helvetica")
+        #expect(style.uniformFontName(in: NSRange(location: 0, length: 2)) == "Courier")
+        #expect(style.uniformFontName(in: NSRange(location: 0, length: 5)) == nil)
+        style.setFont("Courier", in: NSRange(location: 0, length: 5))
+        #expect(style.fontRuns == nil && style.fontName == "Courier")
+        style.setFont("Helvetica", in: NSRange(location: 0, length: 2))
         let mixed = EditorSession.textBoxSize(style)
         style.setFont("Courier", in: NSRange(location: 0, length: 0))
         #expect(style.fontRuns == nil && style.fontName == "Courier")
@@ -462,6 +467,25 @@ struct TypeToolTests {
         style.replaceCharacters(in: NSRange(location: 5, length: 0), withLength: 1)
         style.content += "!"
         #expect(style.isValid && style.fontName(at: 5) == "Courier")
+    }
+
+    @Test func selectedFontSurvivesReopening() async throws {
+        let session = makeSession()
+        session.beginText(at: CGPoint(x: 30, y: 40))
+        session.textDraft?.style.content = "Hello"
+        session.textDraft?.style.fontName = "Helvetica"
+        session.textDraft?.selection = NSRange(location: 0, length: 2)
+        session.changeTextStyle { $0.setFont("Courier", in: session.textDraft?.selection ?? NSRange()) }
+        #expect(session.finishText())
+        let snapshot = try #require(session.projectSnapshot())
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("TextFonts-\(UUID()).comp")
+        defer { try? FileManager.default.removeItem(at: url) }
+        try await ProjectStore.shared.save(snapshot, to: url)
+        let reopened = EditorSession()
+        reopened.installProject(try await ProjectStore.shared.load(from: url), from: url)
+        let text = try #require(reopened.document?.layers.last?.liveText)
+        #expect(text.style.fontRuns == [LayerTextFontRun(location: 0, length: 2, fontName: "Courier")])
+        #expect(text.style.fontName == "Helvetica")
     }
 
     @Test func cancelingPickerRestoresSelectionColors() throws {
