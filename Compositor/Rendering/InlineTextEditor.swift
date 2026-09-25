@@ -8,6 +8,14 @@ final class CanvasTextView: NSTextView {
     weak var editor: InlineTextEditor?
     private let textUndo = UndoManager()
     override var undoManager: UndoManager? { textUndo }
+    override func resignFirstResponder() -> Bool {
+        // A menu or the color picker takes the focus and AppKit then paints the selection solid gray, which covers
+        // the letters the canvas draws underneath. Remember the letters first; the layout manager keeps the wash.
+        let range = selectedRange()
+        let resigned = super.resignFirstResponder()
+        if range.length > 0 { editor?.keepSelection(range) }
+        return resigned
+    }
     override func keyDown(with event: NSEvent) {
         guard let event = ShortcutSettings.shared.textEvent(event) else { return }
         if event.keyCode == 53 { editor?.canvas?.session.cancelText(); return }
@@ -37,6 +45,15 @@ final class CanvasTextView: NSTextView {
     override func paste(_ sender: Any?) { pasteAsPlainText(sender) }
     // The editor sets the cursor for the whole box — the I-beam over the text, resize arrows over the edges.
     override func resetCursorRects() {}
+}
+
+/// The selection wash stays translucent. Once the text view is no longer first responder, AppKit fills the
+/// selection with an opaque gray, which hides the letters drawn on the canvas beneath the clear glyphs.
+private final class CanvasTextLayoutManager: NSLayoutManager {
+    override func fillBackgroundRectArray(_ rectArray: UnsafePointer<NSRect>, count rectCount: Int, forCharacterRange charRange: NSRange, color: NSColor) {
+        let paint = color.alphaComponent > 0.5 ? color.withAlphaComponent(0.45) : color
+        super.fillBackgroundRectArray(rectArray, count: rectCount, forCharacterRange: charRange, color: paint)
+    }
 }
 
 final class InlineTextEditor: NSView, NSTextViewDelegate {
@@ -81,6 +98,7 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
         textView.textContainer?.heightTracksTextView = true
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.isAutomaticDashSubstitutionEnabled = false
+        textView.textContainer?.replaceLayoutManager(CanvasTextLayoutManager())
         // The selection shows through to the text the canvas draws beneath it.
         textView.selectedTextAttributes = [.backgroundColor: NSColor.selectedTextBackgroundColor.withAlphaComponent(0.45)]
         textView.setAccessibilityLabel("Canvas text")
@@ -157,12 +175,19 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
             if textView.string != style.content { textView.string = style.content }
             var attributes = EditorSession.textAttributes(style)
             attributes[.foregroundColor] = NSColor.clear
-            textView.typingAttributes = attributes
             if !textView.hasMarkedText() {
                 textView.textStorage?.setAttributes(attributes, range: NSRange(location: 0, length: textView.string.utf16.count))
+                for run in style.fontRuns ?? [] {
+                    let font = NSFont(name: run.fontName, size: style.fontSize) ?? NSFont.systemFont(ofSize: style.fontSize)
+                    textView.textStorage?.addAttribute(.font, value: font, range: NSRange(location: run.location, length: run.length))
+                }
                 textView.setSelectedRange(NSRange(location: min(selection.location, textView.string.utf16.count),
                     length: min(selection.length, max(0, textView.string.utf16.count - selection.location))))
             }
+            let caret = selection.length > 0 ? selection.location : max(0, selection.location - 1)
+            let face = style.fontName(at: caret)
+            attributes[.font] = NSFont(name: face, size: style.fontSize) ?? NSFont.systemFont(ofSize: style.fontSize)
+            textView.typingAttributes = attributes
             shownStyle = style
             updateInsertionPointColor(style)
             synchronizing = false
@@ -185,11 +210,14 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
 
     func textDidChange(_ notification: Notification) {
         guard !synchronizing, let session = canvas?.session, var draft = session.textDraft else { return }
-        if let pendingStyle, pendingStyle.content == textView.string { draft.style.colorRuns = pendingStyle.colorRuns }
+        if let pendingStyle, pendingStyle.content == textView.string {
+            draft.style.colorRuns = pendingStyle.colorRuns
+            draft.style.fontRuns = pendingStyle.fontRuns
+        }
         pendingStyle = nil
         draft.style.content = textView.string
-        // Text NSTextView changed without saying how can't keep its colors letter for letter.
-        if !draft.style.isValid { draft.style.colorRuns = nil }
+        // Text NSTextView changed without saying how can't keep its colors and faces letter for letter.
+        if !draft.style.isValid { draft.style.colorRuns = nil; draft.style.fontRuns = nil }
         draft.selection = textView.selectedRange()
         shownStyle = draft.style
         session.textDraft = draft
@@ -200,7 +228,8 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
     func textView(_ textView: NSTextView, shouldChangeTextIn affectedCharRange: NSRange, replacementString: String?) -> Bool {
         let length = replacementString?.utf16.count ?? 0
         guard textView.string.utf16.count - affectedCharRange.length + length <= 100_000 else { return false }
-        if !synchronizing, let draft = canvas?.session.textDraft, draft.style.colorRuns != nil {
+        if !synchronizing, let draft = canvas?.session.textDraft,
+           draft.style.colorRuns != nil || draft.style.fontRuns != nil {
             var style = pendingStyle ?? draft.style
             guard NSMaxRange(affectedCharRange) <= style.content.utf16.count else { return true }
             style.replaceCharacters(in: affectedCharRange, withLength: length)
@@ -212,8 +241,16 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
     func textViewDidChangeSelection(_ notification: Notification) {
         guard !synchronizing, let session = canvas?.session, session.textDraft?.id == draftID else { return }
         let selection = textView.selectedRange()
+        // Opening the color picker or the font menu resigns this view and collapses the highlight. The letters
+        // the user had selected stay selected, so the change still applies to them.
+        if selection.length == 0, window?.firstResponder !== textView, (session.textDraft?.selection.length ?? 0) > 0 { return }
         if session.textDraft?.selection != selection { session.textDraft?.selection = selection }
         if let style = session.textDraft?.style { updateInsertionPointColor(style) }
+    }
+    /// Puts back a selection a focus change wiped, so a control opened from the Type bar still edits those letters.
+    func keepSelection(_ range: NSRange) {
+        guard range.length > 0, let session = canvas?.session, session.textDraft?.id == draftID else { return }
+        if session.textDraft?.selection != range { session.textDraft?.selection = range }
     }
     private func updateInsertionPointColor(_ style: LayerTextStyle) {
         let location = textView.selectedRange().location

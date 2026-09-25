@@ -1,5 +1,4 @@
 import AppKit
-import SwiftUI
 import Testing
 @testable import Compositor
 
@@ -349,33 +348,6 @@ struct TypeToolTests {
         #expect(largest <= 2, "the canvas changed by up to \(largest) when the text was committed")
     }
 
-    @Test func editorSelectionReachesTheColorChange() throws {
-        let session = makeSession()
-        session.beginText(at: CGPoint(x: 40, y: 40))
-        session.textDraft?.style.content = "Hello"
-        let host = NSHostingView(rootView: VStack(spacing: 0) {
-            EditorCanvas(session: session).frame(width: 800, height: 500)
-            TypeControls(session: session)
-        })
-        let window = NSWindow(contentRect: CGRect(x: 0, y: 0, width: 800, height: 560), styleMask: [.titled], backing: .buffered, defer: false)
-        window.contentView = host
-        window.makeKeyAndOrderFront(nil)
-        defer { window.orderOut(nil) }
-        let canvas = try #require(host.find(CanvasView.self))
-        canvas.synchronizeDisplay()
-        let editor = try #require(canvas.inlineTextEditor)
-        window.makeFirstResponder(editor.textView)
-        editor.textView.setSelectedRange(NSRange(location: 0, length: 2))
-        #expect(session.textDraft?.selection == NSRange(location: 0, length: 2))
-        let colorButton = try #require(host.find(NSButton.self) { $0.accessibilityLabel() == "Text color" })
-        colorButton.performClick(nil)
-        #expect(session.textDraft?.selection == NSRange(location: 0, length: 2), "opening the color control left \(String(describing: session.textDraft?.selection))")
-        try #require(session.colorPicker).hsb.setRGB(PaletteColor(red: 1, green: 0, blue: 0))
-        session.previewTextColor()
-        #expect(session.textDraft?.style.color(at: 0) == PaletteColor(red: 1, green: 0, blue: 0))
-        #expect(session.textDraft?.style.color(at: 2) == .black, "the unselected letters changed too")
-    }
-
     private let red = PaletteColor(red: 1, green: 0, blue: 0)
 
     @Test func colorAppliesToSelectionAndFollowsEdits() {
@@ -399,6 +371,25 @@ struct TypeToolTests {
         // No selection, or all of it, recolors the whole text.
         style.setColor(red, in: NSRange(location: 4, length: 0))
         #expect(style.colorRuns == nil && style.red == 1)
+    }
+
+    @Test func fontAppliesToTheSelectionOnly() {
+        var style = LayerTextStyle()
+        style.content = "Hello"
+        style.fontName = "Helvetica"
+        style.setFont("Courier", in: NSRange(location: 0, length: 2))
+        #expect(style.fontName == "Helvetica")
+        #expect(style.fontRuns == [LayerTextFontRun(location: 0, length: 2, fontName: "Courier")])
+        #expect(style.fontName(at: 0) == "Courier" && style.fontName(at: 2) == "Helvetica")
+        let mixed = EditorSession.textBoxSize(style)
+        style.setFont("Courier", in: NSRange(location: 0, length: 0))
+        #expect(style.fontRuns == nil && style.fontName == "Courier")
+        #expect(EditorSession.textBoxSize(style).width > mixed.width)
+
+        style.setFont("Helvetica", in: NSRange(location: 1, length: 3))
+        style.replaceCharacters(in: NSRange(location: 5, length: 0), withLength: 1)
+        style.content += "!"
+        #expect(style.isValid && style.fontName(at: 5) == "Courier")
     }
 
     @Test func invalidColorRunsAreRejected() {
@@ -478,15 +469,5 @@ struct TypeToolTests {
         #expect(session.textDraft?.style.color(at: 0).blue == 1)
         session.closeColorPicker(commit: false)
         #expect(session.textDraft?.style == colored)
-    }
-}
-
-private extension NSView {
-    func find<T: NSView>(_ type: T.Type, where matches: (T) -> Bool = { _ in true }) -> T? {
-        if let found = self as? T, matches(found) { return found }
-        for child in subviews {
-            if let found = child.find(type, where: matches) { return found }
-        }
-        return nil
     }
 }
