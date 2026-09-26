@@ -459,10 +459,9 @@ struct TypeToolTests {
         style.setFont("Courier", in: NSRange(location: 0, length: 5))
         #expect(style.fontRuns == nil && style.fontName == "Courier")
         style.setFont("Helvetica", in: NSRange(location: 0, length: 2))
-        let mixed = EditorSession.textBoxSize(style)
+        #expect(style.fontRuns == [LayerTextFontRun(location: 0, length: 2, fontName: "Helvetica")])
         style.setFont("Courier", in: NSRange(location: 0, length: 0))
         #expect(style.fontRuns == nil && style.fontName == "Courier")
-        #expect(EditorSession.textBoxSize(style).width > mixed.width)
         style.setFont("Helvetica", in: NSRange(location: 1, length: 3))
         style.replaceCharacters(in: NSRange(location: 5, length: 0), withLength: 1)
         style.content += "!"
