@@ -79,8 +79,10 @@ brew install --cask robbietilton-compositor
 
 ## Requirements
 
-- macOS 26.0 or later on a Mac with Apple silicon
-- Xcode 26 or later (to build from source)
+- macOS 26.0 or later, on Apple silicon or Intel. The current version is 1.4.1.
+- Xcode 26 or later (to build from source). A build uses the architecture of the Mac it is built on, so an Intel Mac produces an Intel app.
+
+The downloads above come from the upstream project and are built for Apple silicon. They do not launch on Intel. An Intel Mac needs a build from this repository.
 
 ## Building
 
