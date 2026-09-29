@@ -1,0 +1,28 @@
+name: Security
+description: Report a security problem. Do not include secrets, keys, or a working exploit.
+title: "[Security] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the impact and how to reproduce it. Leave out passwords, tokens, private keys, and exploit payloads.
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: What an attacker could do, and what they would already need.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Compositor version
+      placeholder: "1.4.1"
+    validations:
+      required: true
