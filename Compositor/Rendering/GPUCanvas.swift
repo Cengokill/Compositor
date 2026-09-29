@@ -188,7 +188,7 @@ import QuartzCore
             else { return false }
             let w = Int(bounds.width), h = Int(bounds.height)
             let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: texture.pixelFormat, width: w, height: h, mipmapped: false)
-            descriptor.storageMode = .shared
+            descriptor.storageMode = renderer.textureStorageMode
             guard let staging = renderer.device.makeTexture(descriptor: descriptor) else { return false }
             let bytes = mask ? 1 : 4
             let offset = Int(bounds.minY - rect.minY.rounded()) * pixels.bytesPerRow + Int(bounds.minX - rect.minX.rounded()) * bytes
@@ -240,12 +240,18 @@ import QuartzCore
         strokes = strokes.filter { $0.value.used >= frame - keepFrames }
     }
 
+    /// Shared storage is valid for textures only on unified memory. A discrete GPU rejects `MTLStorageModeShared`
+    /// for textures, and Metal validation aborts — the first upload of an imported image hit that.
+    var textureStorageMode: MTLStorageMode {
+        device.hasUnifiedMemory ? .shared : .managed
+    }
+
     private func texture(width: Int, height: Int, mask: Bool) -> MTLTexture? {
         guard width > 0, height > 0, width <= 16_384, height <= 16_384 else { return nil }
         let descriptor = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: mask ? .r8Unorm : .rgba8Unorm,
                                                                   width: width, height: height, mipmapped: false)
         descriptor.usage = [.shaderRead, .shaderWrite]
-        descriptor.storageMode = .shared
+        descriptor.storageMode = textureStorageMode
         return device.makeTexture(descriptor: descriptor)
     }
 
