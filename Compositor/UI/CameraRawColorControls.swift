@@ -117,6 +117,9 @@ struct CameraRawCurveControls: View {
     private func slider(_ title: String, _ key: WritableKeyPath<CameraRawCurveSettings, Double>, _ range: ClosedRange<Double>, _ reset: Double, _ help: String) -> some View {
         HStack {
             Text(title).frame(width: 88, alignment: .leading).help(help)
+                .scrubbable(sensitivity: 1,
+                            value: Binding(get: { raw.curve[keyPath: key] },
+                                           set: { value in update { $0.curve[keyPath: key] = value } }), range: range)
             CameraRawSlider(value: raw.curve[keyPath: key], range: range, track: .plain, help: help,
                             onChange: { value in update { $0.curve[keyPath: key] = value } },
                             onReset: { update { $0.curve[keyPath: key] = reset } })
@@ -273,6 +276,9 @@ struct CameraRawMixerControls: View {
         let help = "\((edit?.cameraRawMixerTab ?? .hue).rawValue) of \(CameraRawMixerSettings.names[index])."
         return HStack {
             Text(CameraRawMixerSettings.names[index]).frame(width: 78, alignment: .leading).help(help)
+                .scrubbable(sensitivity: 1,
+                            value: Binding(get: { raw.mixer[keyPath: key][index] },
+                                           set: { value in update { $0.mixer[keyPath: key][index] = value } }), range: -100...100)
             CameraRawSlider(value: raw.mixer[keyPath: key][index], range: -100...100, track: familyTrack(index, key), help: help,
                             onChange: { value in update { $0.mixer[keyPath: key][index] = value } },
                             onReset: { update { $0.mixer[keyPath: key][index] = 0 } })
@@ -464,7 +470,11 @@ private struct GradeWheel: View {
             let angle = hue * Double.pi / 180
             let distance = CGFloat(saturation / 100) * radius
             ZStack {
-                Circle().fill(AngularGradient(gradient: Gradient(colors: [.red, .yellow, .green, .cyan, .blue, .purple, .red]), center: .center))
+                // Hue runs counterclockwise from red at the right, as the drag and the dot measure it. SwiftUI's
+                // angular gradient runs clockwise, so its stops go through the hues backwards.
+                Circle().fill(AngularGradient(gradient: Gradient(colors: stride(from: 360.0, through: 0, by: -30).map {
+                    Color(hue: $0.truncatingRemainder(dividingBy: 360) / 360, saturation: 1, brightness: 1)
+                }), center: .center))
                     .opacity(0.85)
                 Circle().stroke(.white.opacity(0.8), lineWidth: 1)
                 Circle().fill(.white).frame(width: 10, height: 10)

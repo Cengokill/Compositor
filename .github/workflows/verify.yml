@@ -1,0 +1,105 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: verify-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    name: unit (${{ matrix.arch }})
+    # Push covers same-repo branches. pull_request runs only for forks, so a PR is not tested twice.
+    # x86_64 uses GitHub's Intel macOS 26 image and only the GPU and import tests. arm64 runs the full suite.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-26
+            arch: arm64
+          - runner: macos-26-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Resolve Swift packages
+        run: >
+          xcodebuild -resolvePackageDependencies
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -onlyUsePackageVersionsFromResolvedFile
+
+      - name: Build for testing
+        id: build
+        run: >
+          xcodebuild build-for-testing
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
+          -configuration Debug
+          -derivedDataPath DerivedData
+          CODE_SIGN_IDENTITY=-
+
+      # These two suites show real windows and time them, so they run alone after the rest.
+      - name: Run unit tests in parallel
+        if: matrix.arch == 'arm64'
+        run: >
+          xcodebuild test-without-building
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
+          -derivedDataPath DerivedData
+          -resultBundlePath ParallelResults.xcresult
+          -parallel-testing-enabled YES
+          -skip-testing:CompositorTests/FloatingPanelTests
+          -skip-testing:CompositorTests/SliderSnapTests
+
+      # The Intel runner is four cores. The full suite already ran on arm64; here only the paths that
+      # failed on a discrete GPU.
+      - name: Run Intel GPU and import tests
+        if: matrix.arch == 'x86_64'
+        run: >
+          xcodebuild test-without-building
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
+          -derivedDataPath DerivedData
+          -resultBundlePath ParallelResults.xcresult
+          -parallel-testing-enabled YES
+          -only-testing:CompositorTests/MetalWarpTests
+          -only-testing:CompositorTests/GPUCanvasTests
+          -only-testing:CompositorTests/ImageImportTests
+
+      - name: Run window tests serially
+        if: ${{ matrix.arch == 'arm64' && !cancelled() && steps.build.outcome == 'success' }}
+        run: >
+          xcodebuild test-without-building
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
+          -derivedDataPath DerivedData
+          -resultBundlePath SerialResults.xcresult
+          -parallel-testing-enabled NO
+          -only-testing:CompositorTests/FloatingPanelTests
+          -only-testing:CompositorTests/SliderSnapTests
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-test-results-${{ matrix.arch }}
+          path: '*.xcresult'
+          retention-days: 7
+          if-no-files-found: ignore
