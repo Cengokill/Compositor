@@ -14,7 +14,7 @@ nonisolated enum AdjustmentKind: String, Codable, CaseIterable, Sendable {
     /// the Filter menu's filters.
     static let imageAdjustments: [Self] = [.curves, .levels, .hsv, .blackWhite, .colorBalance, .exposure, .gradientMap, .grain, .invert]
     static let filters: [Self] = [.gaussianBlur, .motionBlur, .progressiveBlur, .addNoise, .vignette, .bloomGlow, .rgbSplit,
-                                  .lensEffects, .tonalContrast]
+                                  .lensEffects, .tonalContrast, .structure]
     var symbol: String {
         switch self {
         case .curves: return "point.topleft.down.to.point.bottomright.curvepath"

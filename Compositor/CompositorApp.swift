@@ -345,7 +345,7 @@ struct CompositorApp: App {
                         .configuredKeyboardShortcut("f", modifiers: [.command, .control]).disabled(!session.canRepeatLastFilter)
                     Divider()
                     // Those that can also be adjustment layers, in that menu's order, then the rest.
-                    let layered = AdjustmentKind.filters.compactMap(\.filterKind)
+                    let layered = AdjustmentKind.filters.compactMap(\.filterKind).filter { $0 != .structure }
                     let others = FilterKind.allCases.filter { $0 != .contentAwareFill && $0 != .structure && !$0.isImageAdjustment && !layered.contains($0) }
                     ForEach(layered, id: \.self) { filterMenuItem($0) }
                     Divider()
