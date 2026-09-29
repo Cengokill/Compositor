@@ -113,10 +113,17 @@ import Metal
 
     func smudge(at center: CGPoint, radius: Int, diameter: CGFloat, hardness: CGFloat, strength: CGFloat) {
         guard let carried else { return }
-        dispatch("warp_smudge", Dab(center: SIMD2(Int32(center.x.rounded()), Int32(center.y.rounded())), radius: Int32(radius),
-                                    size: SIMD2(Int32(width), Int32(height)), origin: .zero, area: .zero,
-                                    inverseRadius: 1 / Float(diameter / 2), hardness: Float(hardness), keep: Float(strength), move: .zero),
-                 textures: [texture, carried], threads: 2 * radius + 1)
+        let side = 2 * radius + 1
+        let cx = Int(center.x.rounded()), cy = Int(center.y.rounded())
+        // The dab reads a copy, then writes the canvas. Reading and writing one rgba8 texture is not reliable on a
+        // discrete GPU: Smudge came back unchanged there, while Liquify, which already copies first, matched.
+        guard let scratch = texture(scratch, side: side, format: .rgba8Unorm) else { return }
+        self.scratch = scratch
+        let dab = Dab(center: SIMD2(Int32(cx), Int32(cy)), radius: Int32(radius), size: SIMD2(Int32(width), Int32(height)),
+                      origin: SIMD2(Int32(cx - radius), Int32(cy - radius)), area: SIMD2(Int32(side), Int32(side)),
+                      inverseRadius: 1 / Float(diameter / 2), hardness: Float(hardness), keep: Float(strength), move: .zero)
+        dispatch("warp_copy", dab, textures: [texture, scratch], threads: side)
+        dispatch("warp_smudge", dab, textures: [texture, carried, scratch], threads: side)
     }
 
     func push(from a: CGPoint, to b: CGPoint, radius r: Int, diameter: CGFloat, hardness: CGFloat, strength: CGFloat) {
@@ -175,8 +182,9 @@ import Metal
         carried.write(inside ? canvas.read(uint2(p)) * 255.0f : float4(0.0f), gid);
     }
 
-    kernel void warp_smudge(texture2d<float, access::read_write> canvas [[texture(0)]],
+    kernel void warp_smudge(texture2d<float, access::write> canvas [[texture(0)]],
                             texture2d<float, access::read_write> carried [[texture(1)]],
+                            texture2d<float, access::read> underTex [[texture(2)]],
                             constant Dab &d [[buffer(0)]], uint2 gid [[thread_position_in_grid]]) {
         int side = 2 * d.radius + 1;
         if (int(gid.x) >= side || int(gid.y) >= side) return;
@@ -184,7 +192,7 @@ import Metal
         if (p.x < 0 || p.y < 0 || p.x >= d.size.x || p.y >= d.size.y) return;
         float w = weight(sqrt(float(offset.x * offset.x + offset.y * offset.y)) * d.inverseRadius, d.hardness);
         if (w <= 0.0f) return;
-        float4 under = canvas.read(uint2(p)) * 255.0f, held = carried.read(gid);
+        float4 under = underTex.read(gid) * 255.0f, held = carried.read(gid);
         float4 painted = under + (held - under) * w;
         canvas.write(clamp(round(painted), 0.0f, 255.0f) / 255.0f, uint2(p));
         // The brush picks up some of what it just left, more the weaker the smudge.
