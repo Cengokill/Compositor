@@ -15,7 +15,7 @@ jobs:
   unit:
     name: unit (${{ matrix.arch }})
     # Push covers same-repo branches. pull_request runs only for forks, so a PR is not tested twice.
-    # x86_64 uses GitHub's Intel macOS 26 image. arm64 stays on the Apple silicon image.
+    # x86_64 uses GitHub's Intel macOS 26 image and only the GPU and import tests. arm64 runs the full suite.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
     strategy:
       fail-fast: false
@@ -54,6 +54,7 @@ jobs:
 
       # These two suites show real windows and time them, so they run alone after the rest.
       - name: Run unit tests in parallel
+        if: matrix.arch == 'arm64'
         run: >
           xcodebuild test-without-building
           -project Compositor.xcodeproj
@@ -65,8 +66,24 @@ jobs:
           -skip-testing:CompositorTests/FloatingPanelTests
           -skip-testing:CompositorTests/SliderSnapTests
 
+      # The Intel runner is four cores. The full suite already ran on arm64; here only the paths that
+      # failed on a discrete GPU.
+      - name: Run Intel GPU and import tests
+        if: matrix.arch == 'x86_64'
+        run: >
+          xcodebuild test-without-building
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
+          -derivedDataPath DerivedData
+          -resultBundlePath ParallelResults.xcresult
+          -parallel-testing-enabled YES
+          -only-testing:CompositorTests/MetalWarpTests
+          -only-testing:CompositorTests/GPUCanvasTests
+          -only-testing:CompositorTests/ImageImportTests
+
       - name: Run window tests serially
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        if: ${{ matrix.arch == 'arm64' && !cancelled() && steps.build.outcome == 'success' }}
         run: >
           xcodebuild test-without-building
           -project Compositor.xcodeproj
