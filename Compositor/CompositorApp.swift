@@ -346,7 +346,7 @@ struct CompositorApp: App {
                     Divider()
                     // Those that can also be adjustment layers, in that menu's order, then the rest.
                     let layered = AdjustmentKind.filters.compactMap(\.filterKind)
-                    let others = FilterKind.allCases.filter { $0 != .contentAwareFill && !$0.isImageAdjustment && !layered.contains($0) }
+                    let others = FilterKind.allCases.filter { $0 != .contentAwareFill && $0 != .structure && !$0.isImageAdjustment && !layered.contains($0) }
                     ForEach(layered, id: \.self) { filterMenuItem($0) }
                     Divider()
                     ForEach(others, id: \.self) { filterMenuItem($0) }
