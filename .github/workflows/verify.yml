@@ -13,10 +13,19 @@ permissions:
 
 jobs:
   unit:
-    name: unit
+    name: unit (${{ matrix.arch }})
     # Push covers same-repo branches. pull_request runs only for forks, so a PR is not tested twice.
+    # x86_64 uses GitHub's Intel macOS 26 image. arm64 stays on the Apple silicon image.
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-    runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-26
+            arch: arm64
+          - runner: macos-26-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     steps:
       - name: Checkout
@@ -38,7 +47,7 @@ jobs:
           xcodebuild build-for-testing
           -project Compositor.xcodeproj
           -scheme Compositor
-          -destination 'platform=macOS,arch=arm64'
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
           -configuration Debug
           -derivedDataPath DerivedData
           CODE_SIGN_IDENTITY=-
@@ -49,7 +58,7 @@ jobs:
           xcodebuild test-without-building
           -project Compositor.xcodeproj
           -scheme Compositor
-          -destination 'platform=macOS,arch=arm64'
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
           -derivedDataPath DerivedData
           -resultBundlePath ParallelResults.xcresult
           -parallel-testing-enabled YES
@@ -62,7 +71,7 @@ jobs:
           xcodebuild test-without-building
           -project Compositor.xcodeproj
           -scheme Compositor
-          -destination 'platform=macOS,arch=arm64'
+          -destination 'platform=macOS,arch=${{ matrix.arch }}'
           -derivedDataPath DerivedData
           -resultBundlePath SerialResults.xcresult
           -parallel-testing-enabled NO
@@ -73,7 +82,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: unit-test-results
+          name: unit-test-results-${{ matrix.arch }}
           path: '*.xcresult'
           retention-days: 7
           if-no-files-found: ignore
