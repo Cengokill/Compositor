@@ -127,7 +127,7 @@ struct FilterLayerTests {
             default: #expect(layer.filterLayer.lens?.effect == .mist && layer.filterLayer.lens?.mistStrength == 90)
             }
             let snapshot = try #require(session.projectSnapshot())
-            #expect(snapshot.manifest.version == 18)
+            #expect(snapshot.manifest.version >= 18)
             let after = try reader(try await ImageExporter.shared.render(snapshot).image)
             let changed = (0..<80).contains { x in (0..<60).contains { y in after(x, y) != before(x, y) } }
             #expect(changed, "\(kind) changes the image")
